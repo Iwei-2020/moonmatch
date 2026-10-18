@@ -315,3 +315,92 @@
 .home__disclaimer {
   margin-top: 40rpx;
 }
+
+/* 取签浮层：选签筒 → 匹配中 → 池空/上限 → 展示缘签 */
+.home__ov {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.home__ov-panel {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 40rpx 32rpx 48rpx;
+  border-radius: 32rpx 32rpx 0 0;
+  background: #FFFDFA;
+  box-shadow: 0 -8rpx 40rpx rgba(58, 43, 46, 0.16);
+}
+
+.home__ov-title {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 34rpx;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: #3A2B2E;
+}
+
+.home__pool {
+  display: flex;
+  gap: 24rpx;
+  margin: 32rpx 0 24rpx;
+}
+
+.home__pool-btn {
+  flex: 1;
+  height: 140rpx;
+  line-height: 140rpx;
+  text-align: center;
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.32);
+  background: linear-gradient(180deg, rgba(253, 241, 229, 0.92), rgba(255, 253, 250, 0.92));
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 34rpx;
+  letter-spacing: 0.14em;
+  color: #A32E22;
+}
+
+.home__ov-note {
+  font-size: 21rpx;
+  line-height: 1.6;
+  text-align: center;
+  color: rgba(58, 43, 46, 0.6);
+}
+
+.home__ov-text {
+  margin: 40rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #3A2B2E;
+}
+
+.home__ov-count {
+  margin: 24rpx 4rpx 0;
+  text-align: center;
+  font-size: 23rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.home__ov-btn {
+  margin-top: 28rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 27rpx;
+  border-radius: 999rpx;
+}
+
+.home__ov-spin {
+  width: 72rpx;
+  height: 72rpx;
+  margin: 56rpx auto 0;
+  border-radius: 50%;
+  border: 4rpx solid rgba(194, 64, 47, 0.18);
+  border-top-color: #C2402F;
+  animation: home-spin 0.9s linear infinite;
+}
+
+@keyframes home-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

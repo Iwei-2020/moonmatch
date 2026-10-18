@@ -1,14 +1,14 @@
 'use strict';
 
 /**
- * P-02 留缘签（半屏表单，3 字段：性别 / 年龄 / 缘签）
+ * P-02 留缘签（半屏表单，2 字段：性别 / 缘签）
  *
  * 依据：说明书 §2.1（字段清单与规则）、§6.4（类型白名单）；线稿说明 §三（3 态：空表单 / 已填写 / 提交中）。
  * 铁律：PROFILE_SUBMIT 埋点不得上报缘签内容；缘签的输入与回显一律掩码处理。
  * 产品口径：不再让用户区分号码类型 —— 单一输入框，客户端自动判别类型并按判别结果掩码 / 提交。
  */
 
-const { PAGES, ROUTES, COPY, EVENTS, CONTACT_TYPES, LIMITS, ERROR_CODES } = require('../../shared/client-constants.js');
+const { PAGES, ROUTES, COPY, EVENTS, CONTACT_TYPES, ERROR_CODES } = require('../../shared/client-constants.js');
 const { callActive } = require('../../core/cloud.js');
 const { track } = require('../../core/tracker.js');
 const { maskContact } = require('../../core/mask.js');
@@ -43,9 +43,6 @@ Page({
       { value: 'male', label: '男' },
       { value: 'female', label: '女' },
     ],
-    age: '',
-    ageMin: LIMITS.AGE_MIN,
-    ageMax: LIMITS.AGE_MAX,
     contact: '',
     contactMasked: '',
     agreed: false,
@@ -64,11 +61,6 @@ Page({
 
   onGender(e) {
     this.setData({ gender: e.currentTarget.dataset.value });
-  },
-
-  onAge(e) {
-    const age = String(e.detail.value || '').replace(/\D/g, '');
-    this.setData({ age });
   },
 
   onContact(e) {
@@ -97,28 +89,22 @@ Page({
     if (this.data.submitting) return;
 
     const gender = this.data.gender;
-    const age = parseInt(this.data.age, 10);
     const contact = this.data.contact;
     const contactType = detectContactType(contact);
 
     if (!gender) return this.toast('请选择性别');
-    if (!age || age < LIMITS.AGE_MIN || age > LIMITS.AGE_MAX) {
-      return this.toast('年龄需在 ' + LIMITS.AGE_MIN + '–' + LIMITS.AGE_MAX + ' 岁之间');
-    }
     if (!contact) return this.toast('请填入你的缘签');
     if (!isValidContact(contactType, contact)) return this.toast('请填入正确的缘签');
     if (!this.data.agreed) return this.toast('请先阅读并同意协议');
 
     this.setData({ submitting: true });
 
-    // 埋点：仅上报 性别 / 年龄 / 类型，绝不上报缘签内容
-    track(EVENTS.PROFILE_SUBMIT, { gender, age, contact_type: contactType });
+    // 埋点：仅上报 性别 / 类型，绝不上报缘签内容
+    track(EVENTS.PROFILE_SUBMIT, { gender, contact_type: contactType });
 
-    const birthYear = new Date().getFullYear() - age;
     const res = await callActive('submitProfile', {
       agreement: this.data.agreed,
       gender,
-      birthYear,
       contactType,
       contact,
     });

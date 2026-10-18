@@ -31,7 +31,7 @@ function makeCtx(store, openid, clock) {
 
 function register(store, openid, gender, phone) {
   return handlers.handleSubmitProfile(
-    { agreement: true, gender, birthYear: 1996, contactType: 'phone', contact: phone },
+    { agreement: true, gender, contactType: 'phone', contact: phone },
     makeCtx(store, openid, { now: NOW }),
   );
 }
@@ -46,7 +46,7 @@ test('全链路：登记 → 获取 → 看广告发券 → 解锁复制（明�
   assert.equal(peer.code, 0);
   assert.equal(peer.data.maskedContact, '139****5432');
 
-  const match = await handlers.handleGetMatch({}, makeCtx(store, 'me', clock));
+  const match = await handlers.handleGetMatch({ pool: 'female' }, makeCtx(store, 'me', clock));
   assert.equal(match.code, 0);
   assert.equal(match.data.poolEmpty, false);
   assert.equal(match.data.card.profileId, peer.data.profileId);
@@ -122,10 +122,13 @@ test('前置守卫：未留缘签也可取签；自身不可解锁；参数缺�
   const clock = { now: NOW };
   const peer = await register(store, 'peer', 'female', PHONE_B);
 
-  const unregistered = await handlers.handleGetMatch({}, makeCtx(store, 'ghost', clock));
+  const noPool = await handlers.handleGetMatch({}, makeCtx(store, 'ghost', clock));
+  assert.equal(noPool.code, ERROR_CODES.INVALID_PARAM, '取签须先选签筒');
+
+  const unregistered = await handlers.handleGetMatch({ pool: 'female' }, makeCtx(store, 'ghost', clock));
   assert.equal(unregistered.code, 0, '取签不再以先留缘签为前提');
   assert.equal(unregistered.data.poolEmpty, false);
-  assert.equal(unregistered.data.card.profileId, peer.data.profileId, '未留缘签走盲取，仍随机取一份');
+  assert.equal(unregistered.data.card.profileId, peer.data.profileId, '未留缘签亦按签筒随机取一份');
 
   await register(store, 'me', 'male', PHONE_A);
   const noParam = await handlers.handleCreateAdTask({}, makeCtx(store, 'me', clock));
@@ -150,9 +153,9 @@ test('getProfile / offlineProfile / reportProfile / reportEvents 基础契约', 
   assert.equal(offline.code, 0);
   assert.equal(offline.data.status, 'offline');
 
-  const blocked = await handlers.handleGetMatch({}, makeCtx(store, 'me', clock));
+  const blocked = await handlers.handleGetMatch({ pool: 'female' }, makeCtx(store, 'me', clock));
   assert.equal(blocked.code, 0, '取签不再要求登记态，下架后仍可取签');
-  assert.equal(blocked.data.poolEmpty, true, '池中仅有自己且已下架 → 无签可取');
+  assert.equal(blocked.data.poolEmpty, true, '池中仅有自己（且已下架）→ 无签可取');
 
   const report = await handlers.handleReportProfile({ profileId: 'MM-XXXXXX', reasonType: 'fake' }, makeCtx(store, 'me', clock));
   assert.equal(report.code, ERROR_CODES.PROFILE_NOT_FOUND);

@@ -21,7 +21,6 @@ function putTarget(store, id, status) {
     profileId: id,
     openid: `owner_${id}`,
     gender: 'female',
-    birthYear: 1998,
     contactType: 'douyin',
     normalizedContact: `cand_${id}`,
     contactHash: `hash_${id}`,

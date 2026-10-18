@@ -181,8 +181,8 @@ function requireOpenid(ctx) {
 /**
  * 读「我」的档案，**允许为 null**。
  *
- * 产品口径调整：取签不再以「先留缘签」为前提 —— 未留缘签 / 审核中 / 已下架的用户同样可以
- * 直接取签；有档案时用于异性偏好与排除自己，无档案时走 matchLib 的「盲取」分支。
+ * 取签不再以「先留缘签」为前提 —— 未留缘签 / 审核中 / 已下架的用户同样可以直接取签；
+ * 档案主要用于「自身不可解锁」等归属校验。
  */
 async function loadProfile(ctx) {
   requireOpenid(ctx);
@@ -212,7 +212,7 @@ const handleSubmitProfile = guard(async (params, ctx) => {
 const handleGetProfile = guard(async (params, ctx) => {
   const now = ctx.now();
   const raw = await ctx.store.getProfileByOpenid(ctx.openid);
-  const profile = raw ? profileLib.toPublicProfile(raw, now) : null;
+  const profile = raw ? profileLib.toPublicProfile(raw) : null;
   const quota = ctx.openid
     ? await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile: raw })
     : null;
@@ -228,27 +228,32 @@ const handleOfflineProfile = guard(async (params, ctx) => {
 /* ============================ 获取（流程 B） ============================ */
 
 /**
- * getMatch：随机取 1 份缘签。
+ * getMatch：按用户选定的签筒随机取 1 份缘签。
+ * `pool`（male / female）为必填 —— 取签流程由客户端「选男/女签筒」驱动。
  * 池子为空**不是错误**，而是正常业务态（客户端展示「今日的缘签已取完」空态）。
- * 未留缘签的用户也能取签（盲取，见 matchLib.pickMatch）。
+ * 未留缘签的用户也能取签（见 matchLib.pickMatch）。
  */
 const handleGetMatch = guard(async (params, ctx) => {
   const now = ctx.now();
-  const profile = await loadProfile(ctx);
+  requireOpenid(ctx);
+
+  const pool = params.pool;
+  if (matchLib.POOLS.indexOf(pool) === -1) throw domainError(ERROR_CODES.INVALID_PARAM, 'pool_required');
 
   assertAllowed(await risk.checkMatch(ctx.store, { openid: ctx.openid, now }));
 
   const picked = await matchLib.pickMatch(ctx.store, {
     openid: ctx.openid,
-    profile,
+    pool,
     now,
     random: ctx.random,
   });
 
+  const profile = await ctx.store.getProfileByOpenid(ctx.openid);
+
   if (picked.poolEmpty) {
     return ok({
       poolEmpty: true,
-      relaxationLevel: picked.relaxationLevel,
       card: null,
       quota: await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile }),
     });
@@ -258,7 +263,6 @@ const handleGetMatch = guard(async (params, ctx) => {
 
   return ok({
     poolEmpty: false,
-    relaxationLevel: picked.relaxationLevel,
     card: picked.card,
     quota: await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile }),
   });
@@ -372,11 +376,10 @@ const handleListUnlocked = guard(async (params, ctx) => {
       items.push({ profileId: record.profileId, available: false, expired: true });
       continue;
     }
-    const view = profileLib.toPublicProfile(target, now);
+    const view = profileLib.toPublicProfile(target);
     items.push({
       profileId: view.profileId,
       gender: view.gender,
-      age: view.age,
       maskedContact: view.maskedContact,
       contactType: view.contactType,
       unlockedAt: record.unlockedAt,
@@ -563,47 +566,41 @@ module.exports = {
 'use strict';
 
 /**
- * 随机匹配（《项目说明书》§2.2 流程 B、附录 A Q3 结论）
+ * 随机匹配（《项目说明书》§2.2 流程 B）
  *
- * 取消广场与列表后，获取 = 服务端随机推送 1 份档案。规则（已冻结）：
- *   ① 默认异性偏好；
- *   ② 年龄邻近优先，按 LIMITS.MATCH_AGE_STEPS 逐级放宽，relaxationLevel = 0..3（埋点 match_result 上报）；
- *   ③ 排除自己、排除已下线的档案；
- *   ④ **已获取过的档案不再重复推送**，除非池子已无新档可给 —— 此时回退展示历史记录（免费复看 30 天内）；
- *   ⑤ 全放宽仍无候选 → poolEmpty（说明书 §9.2 最高风险项：池子供需失衡）。
+ * 取消广场与列表后，获取 = 服务端按用户选定的签筒随机推送 1 份档案。规则（已冻结）：
+ *   ① 按调用方传入的签筒偏好（`pool`：male / female）筛选同性别的在架档案；
+ *   ② 排除自己、排除已下线的档案；
+ *   ③ **已获取过的档案不再重复推送**，除非池子已无新档可给 —— 此时回退展示历史记录（免费复看 30 天内）；
+ *   ④ 池内无候选 → poolEmpty（说明书 §9.2 最高风险项：池子供需失衡）。
  */
 
 const { LIMITS, PROFILE_STATUS } = __req('miniapp/shared/client-constants.js');
-const { ageOf, toPublicProfile } = __req('server/lib/profile.js');
+const { toPublicProfile } = __req('server/lib/profile.js');
 
 /** 默认随机源；单测注入确定性 random 以保证可断言 */
 function defaultRandom(max) {
   return Math.floor(Math.random() * max);
 }
 
-function oppositeOf(gender) {
-  return gender === 'male' ? 'female' : 'male';
-}
+/** 签筒偏好取值（客户端 poolOptions 与服务端校验共用的白名单） */
+const POOLS = ['male', 'female'];
 
 /**
  * 抽取 1 份档案。
  *
- * `profile` 允许为 null：用户**无需先留缘签即可取签**（直接取用），
- * 此时退化为「盲取」——不筛异性、不做年龄邻近，从全部在架档案里随机取一份，
- * relaxationLevel 记为梯度末端（等同「不限年龄」）。
+ * `pool` 为用户选定的签筒（male / female）；缺省或不合法时不筛性别，从全部在架档案里随机取一份。
+ * 用户**无需先留缘签即可取签**（直接取用）。
  *
  * @param {object} store 存储
- * @param {object} args `{ openid, profile, now, random }`
- * @returns {Promise<{poolEmpty:boolean, relaxationLevel:number, card:object|null}>}
+ * @param {object} args `{ openid, pool, now, random }`
+ * @returns {Promise<{poolEmpty:boolean, card:object|null}>}
  */
 async function pickMatch(store, args) {
-  const { openid, profile } = args;
+  const { openid, pool } = args;
   const now = args.now;
   const random = typeof args.random === 'function' ? args.random : defaultRandom;
-  const steps = LIMITS.MATCH_AGE_STEPS;
-
-  const myAge = profile ? ageOf(profile.birthYear, now) : null;
-  const wantGender = profile ? oppositeOf(profile.gender) : '';
+  const wantGender = POOLS.indexOf(pool) >= 0 ? pool : '';
 
   const candidates = (await store.listActiveProfiles())
     .filter((p) => p.openid !== openid && p.status === PROFILE_STATUS.ACTIVE && (!wantGender || p.gender === wantGender));
@@ -612,39 +609,18 @@ async function pickMatch(store, args) {
   const fresh = candidates.filter((p) => !unlockedIds.has(p.profileId));
 
   if (fresh.length) {
-    // 盲取：无自有档案时不筛年龄，直接随机取一份
-    if (myAge === null) {
-      const picked = fresh[random(fresh.length)];
-      return {
-        poolEmpty: false,
-        relaxationLevel: steps.length - 1,
-        card: await toMatchCard(picked, { now, store, openid }),
-      };
-    }
-
-    // ③ 年龄邻近逐级放宽（仅对未获取过的档案）
-    for (let level = 0; level < steps.length; level += 1) {
-      const step = steps[level];
-      const bucket = fresh.filter((p) => Math.abs(ageOf(p.birthYear, now) - myAge) <= step);
-      if (bucket.length) {
-        const picked = bucket[random(bucket.length)];
-        return { poolEmpty: false, relaxationLevel: level, card: await toMatchCard(picked, { now, store, openid }) };
-      }
-    }
+    const picked = fresh[random(fresh.length)];
+    return { poolEmpty: false, card: await toMatchCard(picked, { now, store, openid }) };
   }
 
-  // ④ 池子已无新档：回退到历史记录（30 天内免费复看；超过则需重新解锁）
+  // ③ 池子已无新档：回退到历史记录（30 天内免费复看；超过则需重新解锁）
   if (candidates.length) {
     const picked = candidates[random(candidates.length)];
-    return {
-      poolEmpty: false,
-      relaxationLevel: steps.length - 1,
-      card: await toMatchCard(picked, { now, store, openid }),
-    };
+    return { poolEmpty: false, card: await toMatchCard(picked, { now, store, openid }) };
   }
 
-  // ⑤ 池子为空
-  return { poolEmpty: true, relaxationLevel: steps.length, card: null };
+  // ④ 池子为空
+  return { poolEmpty: true, card: null };
 }
 
 /** 卡片视图：带解锁态与免费复看标记，缘签一律掩码 */
@@ -662,7 +638,7 @@ async function toMatchCard(candidate, { now, store, openid }) {
   return view;
 }
 
-module.exports = { pickMatch, toMatchCard, oppositeOf };
+module.exports = { pickMatch, toMatchCard, POOLS };
   };
 
   // ── server/lib/profile.js
@@ -672,12 +648,12 @@ module.exports = { pickMatch, toMatchCard, oppositeOf };
 /**
  * 档案登记与机审（《项目说明书》§2.1 流程 A、§6.2 虚假信息治理）
  *
- * 强约束：`1 openid = 1 档案 = 1 联系方式`。
- * 极简字段集：性别、年龄（入库存出生年份，展示时按年自动换算）、联系方式。
+ * 强约束：`1 openid = 1 档案 = 1 缘签`。
+ * 极简字段集：性别、缘签。
  */
 
 const crypto = require('node:crypto');
-const { CONTACT_TYPES, LIMITS, PROFILE_STATUS } = __req('miniapp/shared/client-constants.js');
+const { CONTACT_TYPES, PROFILE_STATUS } = __req('miniapp/shared/client-constants.js');
 const { ERROR_CODES, domainError } = __req('server/lib/errors.js');
 const { maskContact, validateContact, hashContact, normalizeContact } = __req('server/lib/mask.js');
 
@@ -685,12 +661,6 @@ const GENDERS = ['male', 'female'];
 const PROFILE_ID_PREFIX = 'MM-';
 /** 联系方式归一后连续 6 位以上相同字符，视为可疑（防凑数注册） */
 const SUSPECT_REPEAT = /(\d)\1{5,}/;
-
-/** 展示用年龄：按出生年份在「当前自然年」下的周岁换算，避免年龄随填报时间过期 */
-function ageOf(birthYear, now) {
-  const year = new Date(now).getUTCFullYear();
-  return Math.max(0, year - Number(birthYear));
-}
 
 function randomProfileId() {
   return `${PROFILE_ID_PREFIX}${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
@@ -702,10 +672,8 @@ function randomProfileId() {
  * @returns {{status:string, reason?:string}}
  */
 function audit(input) {
-  const age = ageOf(input.birthYear, input.now);
   const suspectReasons = [];
 
-  if (age === LIMITS.AGE_MIN || age === LIMITS.AGE_MAX) suspectReasons.push('boundary_age');
   if (SUSPECT_REPEAT.test(input.normalized)) suspectReasons.push('repeated_digits');
   if (input.contactType === CONTACT_TYPES.DOUYIN && input.normalized.length < 6) suspectReasons.push('short_contact');
 
@@ -714,13 +682,11 @@ function audit(input) {
 }
 
 /** 对外档案视图：**只出掩码**，永不含明文（说明书 §6.4） */
-function toPublicProfile(profile, now) {
+function toPublicProfile(profile) {
   if (!profile) return null;
   const view = {
     profileId: profile.profileId,
     gender: profile.gender,
-    age: ageOf(profile.birthYear, now),
-    birthYear: profile.birthYear,
     contactType: profile.contactType,
     maskedContact: maskContact(profile.contactType, profile.normalizedContact || profile.contactEnc || ''),
     status: profile.status,
@@ -737,11 +703,6 @@ async function submitProfile(store, { openid, input, now }) {
   if (params.agreement !== true) throw domainError(ERROR_CODES.INVALID_PARAM, 'agreement_required');
   if (GENDERS.indexOf(params.gender) === -1) throw domainError(ERROR_CODES.INVALID_PARAM, 'gender_invalid');
 
-  const birthYear = Number(params.birthYear);
-  if (!Number.isInteger(birthYear)) throw domainError(ERROR_CODES.INVALID_PARAM, 'birth_year_invalid');
-  const age = ageOf(birthYear, now);
-  if (age < LIMITS.AGE_MIN || age > LIMITS.AGE_MAX) throw domainError(ERROR_CODES.INVALID_PARAM, 'age_out_of_range');
-
   const checked = validateContact(params.contactType, params.contact);
   if (!checked.ok) throw domainError(ERROR_CODES.INVALID_PARAM, checked.reason);
 
@@ -752,21 +713,20 @@ async function submitProfile(store, { openid, input, now }) {
 
   if (existing && isSameContact) {
     // 已有档案且联系方式未变：明确告知「已登记」，客户端引导去「我的档案」
-    throw domainError(ERROR_CODES.ALREADY_REGISTERED, undefined, { profile: toPublicProfile(existing, now) });
+    throw domainError(ERROR_CODES.ALREADY_REGISTERED, undefined, { profile: toPublicProfile(existing) });
   }
   if (holder && holder.openid !== openid) {
     // 同一联系方式仅允许绑定一份档案（说明书 §6.3）
     throw domainError(ERROR_CODES.DUPLICATE_CONTACT);
   }
 
-  const auditResult = audit({ birthYear, normalized: checked.normalized, contactType: params.contactType, now });
+  const auditResult = audit({ normalized: checked.normalized, contactType: params.contactType });
   const profileId = existing ? existing.profileId : randomProfileId();
 
   const profile = {
     profileId,
     openid,
     gender: params.gender,
-    birthYear,
     contactType: params.contactType,
     normalizedContact: checked.normalized, // 明文仅存服务端，用于解锁时一次性下发
     contactHash,
@@ -789,9 +749,9 @@ async function submitProfile(store, { openid, input, now }) {
 }
 
 /** 读取我的档案（未登记返回 null，不抛错） */
-async function getMyProfile(store, { openid, now }) {
+async function getMyProfile(store, { openid }) {
   if (!openid) return null;
-  return toPublicProfile(await store.getProfileByOpenid(openid), now);
+  return toPublicProfile(await store.getProfileByOpenid(openid));
 }
 
 /** 上/下架（下架后自动移出匹配池，说明书 §2.1） */
@@ -806,10 +766,8 @@ async function setOffline(store, { openid, action, now }) {
   } else if (action === 'online') {
     // 重新上架需重新机审（防止下架期间修改内容绕过审核）
     const result = audit({
-      birthYear: profile.birthYear,
       normalized: normalizeContact(profile.contactType, profile.normalizedContact),
       contactType: profile.contactType,
-      now,
     });
     profile.status = result.status;
     profile.rejectReason = result.reason || '';
@@ -844,7 +802,6 @@ async function report(store, { openid, input, now }) {
 
 module.exports = {
   GENDERS,
-  ageOf,
   audit,
   toPublicProfile,
   submitProfile,
@@ -1602,7 +1559,6 @@ const PAGES = {
   HOME: 'P-01',
   REGISTER: 'P-02',
   PROFILE: 'P-03',
-  FETCH: 'P-04',
   UNLOCKS: 'P-05',
   REPORT: 'P-06',
   LEGAL: 'P-07',
@@ -1613,7 +1569,6 @@ const ROUTES = {
   [PAGES.HOME]: '/pages/home/index',
   [PAGES.REGISTER]: '/pages/register/index',
   [PAGES.PROFILE]: '/pages/profile/index',
-  [PAGES.FETCH]: '/pages/fetch/index',
   [PAGES.UNLOCKS]: '/pages/unlocks/index',
   [PAGES.REPORT]: '/pages/report/index',
   [PAGES.LEGAL]: '/pages/legal/index',
@@ -1665,13 +1620,7 @@ const LIMITS = {
   NEW_USER_WINDOW_MS: 86400000,
   FREE_REVISIT_MS: 2592000000, // 已解锁 30 天内免费复看
   AD_FAILURE_EXEMPT: 3, // 广告连续失败 N 次触发当日豁免一次
-  AGE_MIN: 18,
-  AGE_MAX: 60,
-  MATCH_AGE_STEPS: [5, 8, 12, 99], // 年龄邻近梯度 = relaxationLevel 0..3
 };
-
-/** 匹配结果放宽层级语义（埋点 match_result.relaxation_level） */
-const RELAXATION_LABEL = ['±5 岁', '±8 岁', '±12 岁', '不限年龄'];
 
 /** 档案状态（客户端展示与 audit-badge 组件共用） */
 const PROFILE_STATUS = {
@@ -1691,13 +1640,13 @@ const AD = {
 /**
  * 文案（缘签隐喻统一词表）
  *
- * 词表：联系方式 → 「缘签」；登记入口 → 「拿一个」；获取入口 → 「取一个」；广告揭开 → 「解签」。
+ * 词表：联系方式 → 「缘签」；登记入口 → 「留一个」；获取入口 → 「取一个」；广告揭开 → 「解签」。
  * 全站不再出现「联系方式」「手机号」「抖音号」这类直白描述，也不对用户做号码类型的区分。
  * 文案可读性优先，功能语义（字段名 / 状态键 / 错误码 / 埋点）一律保持原样不变。
  */
 const COPY = {
   HOME_TAGLINE: '留一个缘签，看看谁在等你',
-  BTN_REGISTER: '拿一个',
+  BTN_REGISTER: '留一个',
   BTN_FETCH: '取一个',
   BTN_UNLOCK: '看广告解签',
   BTN_COPY: '复制缘签',
@@ -1712,12 +1661,21 @@ const COPY = {
   MATCHING: '正在为你寻缘…',
   EXPIRED: '该缘签已失效',
   AD_FAILED: '广告加载失败，请稍后重试',
+  FETCH_FAIL: '取签失败，请稍后重试',
+  UNLOCKED_OK: '已解签，可复制缘签',
+  AD_INCOMPLETE: '未完整观看，未发放、不扣次数',
   HOME_DISCLAIMER: '本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实',
-  REGISTER_HINT: '填 3 项，10 秒完成；你的缘签在你亲手揭开前，谁都不会看到',
+  REGISTER_HINT: '填 2 项，10 秒完成；你的缘签在你亲手揭开前，谁都不会看到',
   REPORT_DONE: '举报已提交，我们会尽快核实',
   AUDIT_PENDING: '资料审核中',
   REJECTED_PREFIX: '已驳回：',
   CHANGE_CONTACT_NOTICE: '变更缘签需重新审核',
+  /* 取签浮层：选签筒 → 看广告 → 展示缘签 */
+  POOL_TITLE: '想取哪一签？',
+  POOL_MALE: '男签',
+  POOL_FEMALE: '女签',
+  POOL_NOTE: '选定后随机为你取 1 份缘签；取签免费，完整观看 1 条激励视频即可解签',
+  POOL_CANCEL: '再想想',
   /* 首页三味：缘分 / 运气 / 相遇 */
   HOME_FATE_LABEL: '缘分',
   HOME_FATE_TEXT: '月老已为你记下名字，一线牵起，只待相逢',
@@ -1735,7 +1693,6 @@ module.exports = {
   EVENTS,
   CONTACT_TYPES,
   LIMITS,
-  RELAXATION_LABEL,
   PROFILE_STATUS,
   AD,
   COPY,

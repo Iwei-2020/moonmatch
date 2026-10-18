@@ -40,7 +40,7 @@ async function thrown(fn) {
 
 function submit(store, openid, overrides) {
   const input = Object.assign(
-    { agreement: true, gender: 'male', birthYear: 1996, contactType: 'phone', contact: PHONE_A },
+    { agreement: true, gender: 'male', contactType: 'phone', contact: PHONE_A },
     overrides || {},
   );
   return profileLib.submitProfile(store, { openid, input, now: NOW });
@@ -57,24 +57,18 @@ test('submitProfile：合法登记落地为 active，返回掩码且不含明文
 
   const raw = store.getProfileByOpenid('u1');
   assert.equal(raw.normalizedContact, PHONE_A, '服务端保留明文，供 unlock 一次性下发');
-  assert.ok(!JSON.stringify(profileLib.toPublicProfile(raw, NOW)).includes(PHONE_A), '对外视图不得含明文');
+  assert.ok(!JSON.stringify(profileLib.toPublicProfile(raw)).includes(PHONE_A), '对外视图不得含明文');
 });
 
-test('submitProfile：协议 / 性别 / 出生年 / 年龄范围的前置校验', async () => {
+test('submitProfile：协议 / 性别 / 缘签类型的前置校验', async () => {
   const store = createMemoryStore({});
   await throwsCode(() => submit(store, 'u1', { agreement: false }), ERROR_CODES.INVALID_PARAM);
   await throwsCode(() => submit(store, 'u1', { gender: 'other' }), ERROR_CODES.INVALID_PARAM);
-  await throwsCode(() => submit(store, 'u1', { birthYear: undefined }), ERROR_CODES.INVALID_PARAM);
-  await throwsCode(() => submit(store, 'u1', { birthYear: 2012 }), ERROR_CODES.INVALID_PARAM); // 14 岁，超出 18–60
   await throwsCode(() => submit(store, 'u1', { contactType: 'wechat' }), ERROR_CODES.INVALID_PARAM); // 微信号不开放
 });
 
-test('audit：边界年龄与重复数字转人工复核（pending）', async () => {
+test('audit：重复数字命中规则转人工复核（pending）', async () => {
   const store = createMemoryStore({});
-  const boundary = await submit(store, 'u1', { birthYear: 2008 }); // 18 岁，命中边界年龄
-  assert.equal(boundary.status, PROFILE_STATUS.PENDING);
-  assert.equal(boundary.reason, 'boundary_age');
-
   const repeated = await submit(store, 'u2', { contact: PHONE_REPEAT });
   assert.equal(repeated.status, PROFILE_STATUS.PENDING);
   assert.equal(repeated.reason, 'repeated_digits');
@@ -115,7 +109,6 @@ test('getMyProfile：未登记返回 null；已登记只出掩码', async () => 
   const view = await profileLib.getMyProfile(store, { openid: 'u1', now: NOW });
   assert.equal(view.maskedContact, '138****8888');
   assert.equal(view.gender, 'male');
-  assert.equal(view.age, 30);
   assert.equal(view.status, PROFILE_STATUS.ACTIVE);
 });
 

@@ -1,4 +1,4 @@
-<!-- P-02 留缘签 · 半屏表单（仅 3 个字段） -->
+<!-- P-02 留缘签 · 半屏表单（仅 2 个字段） -->
 <view class="mm-page reg">
   <view class="reg__backdrop"></view>
 
@@ -18,17 +18,7 @@
       >{{item.label}}</view>
     </view>
 
-    <!-- ③ 年龄 -->
-    <view class="reg__label">年龄</view>
-    <input
-      class="reg__input"
-      type="number"
-      value="{{age}}"
-      placeholder="18 – 60"
-      bindinput="onAge"
-    />
-
-    <!-- ④ 缘签（单一输入，不区分号码类型；掩码回显） -->
+    <!-- ③ 缘签（单一输入，不区分号码类型；掩码回显） -->
     <view class="reg__label">缘签</view>
     <input
       class="reg__input"

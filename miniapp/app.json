@@ -3,7 +3,6 @@
     "pages/home/index",
     "pages/register/index",
     "pages/profile/index",
-    "pages/fetch/index",
     "pages/unlocks/index",
     "pages/report/index",
     "pages/legal/index"

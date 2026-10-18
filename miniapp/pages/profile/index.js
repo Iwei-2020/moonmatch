@@ -62,13 +62,12 @@ Page({
     else if (status === PROFILE_STATUS.OFFLINE) state = 'offline';
 
     const gender = GENDER_TEXT[p.gender] || '';
-    const age = p.age ? p.age + ' 岁' : '';
 
     this.setData({
       state,
       status,
-      title: gender && age ? gender + ' · ' + age : (gender || age || ''),
-      masked: p.masked || '',
+      title: gender,
+      masked: p.maskedContact || p.masked || '',
       contactType: p.contactType || CONTACT_TYPES.PHONE,
       summary: SUMMARY[state],
       rejectReason: p.rejectReason || '',

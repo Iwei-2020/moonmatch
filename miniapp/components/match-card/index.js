@@ -1,12 +1,12 @@
 'use strict';
 
 /**
- * match-card · 匹配结果卡视觉承载（P-04 / P-05 复用）
+ * match-card · 匹配结果卡视觉承载（P-01 取签浮层 / P-05 缘签簿复用）
  *
  * 依据：说明书 §4「关键交互组件」、§6.4（卡片不含明文）；线稿说明 §9.2（锁定 / 已解签 / 失效）。
  *
  * properties: card:Object、mode:String（locked | unlocked | expired）
- *   card 约定字段：{ profileId, gender, age, masked, contactType, ticketId }
+ *   card 约定字段：{ profileId, gender, masked, contactType, ticketId }
  *   —— 只消费服务端下发的**掩码**，卡片不持有任何缘签明文。
  * events: unlock / copy / report（交给页面处理，组件不直接调云函数）
  */
@@ -52,9 +52,7 @@ Component({
   observers: {
     'card, mode': function (card, mode) {
       const c = card || {};
-      const gender = GENDER_TEXT[c.gender] || '';
-      const age = c.age ? c.age + ' 岁' : '';
-      const title = gender && age ? gender + ' · ' + age : (gender || age || '');
+      const title = GENDER_TEXT[c.gender] || '';
       const badge = BADGE[mode] || BADGE.locked;
 
       this.setData({

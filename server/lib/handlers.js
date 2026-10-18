@@ -61,8 +61,8 @@ function requireOpenid(ctx) {
 /**
  * 读「我」的档案，**允许为 null**。
  *
- * 产品口径调整：取签不再以「先留缘签」为前提 —— 未留缘签 / 审核中 / 已下架的用户同样可以
- * 直接取签；有档案时用于异性偏好与排除自己，无档案时走 matchLib 的「盲取」分支。
+ * 取签不再以「先留缘签」为前提 —— 未留缘签 / 审核中 / 已下架的用户同样可以直接取签；
+ * 档案主要用于「自身不可解锁」等归属校验。
  */
 async function loadProfile(ctx) {
   requireOpenid(ctx);
@@ -92,7 +92,7 @@ const handleSubmitProfile = guard(async (params, ctx) => {
 const handleGetProfile = guard(async (params, ctx) => {
   const now = ctx.now();
   const raw = await ctx.store.getProfileByOpenid(ctx.openid);
-  const profile = raw ? profileLib.toPublicProfile(raw, now) : null;
+  const profile = raw ? profileLib.toPublicProfile(raw) : null;
   const quota = ctx.openid
     ? await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile: raw })
     : null;
@@ -108,27 +108,32 @@ const handleOfflineProfile = guard(async (params, ctx) => {
 /* ============================ 获取（流程 B） ============================ */
 
 /**
- * getMatch：随机取 1 份缘签。
+ * getMatch：按用户选定的签筒随机取 1 份缘签。
+ * `pool`（male / female）为必填 —— 取签流程由客户端「选男/女签筒」驱动。
  * 池子为空**不是错误**，而是正常业务态（客户端展示「今日的缘签已取完」空态）。
- * 未留缘签的用户也能取签（盲取，见 matchLib.pickMatch）。
+ * 未留缘签的用户也能取签（见 matchLib.pickMatch）。
  */
 const handleGetMatch = guard(async (params, ctx) => {
   const now = ctx.now();
-  const profile = await loadProfile(ctx);
+  requireOpenid(ctx);
+
+  const pool = params.pool;
+  if (matchLib.POOLS.indexOf(pool) === -1) throw domainError(ERROR_CODES.INVALID_PARAM, 'pool_required');
 
   assertAllowed(await risk.checkMatch(ctx.store, { openid: ctx.openid, now }));
 
   const picked = await matchLib.pickMatch(ctx.store, {
     openid: ctx.openid,
-    profile,
+    pool,
     now,
     random: ctx.random,
   });
 
+  const profile = await ctx.store.getProfileByOpenid(ctx.openid);
+
   if (picked.poolEmpty) {
     return ok({
       poolEmpty: true,
-      relaxationLevel: picked.relaxationLevel,
       card: null,
       quota: await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile }),
     });
@@ -138,7 +143,6 @@ const handleGetMatch = guard(async (params, ctx) => {
 
   return ok({
     poolEmpty: false,
-    relaxationLevel: picked.relaxationLevel,
     card: picked.card,
     quota: await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile }),
   });
@@ -252,11 +256,10 @@ const handleListUnlocked = guard(async (params, ctx) => {
       items.push({ profileId: record.profileId, available: false, expired: true });
       continue;
     }
-    const view = profileLib.toPublicProfile(target, now);
+    const view = profileLib.toPublicProfile(target);
     items.push({
       profileId: view.profileId,
       gender: view.gender,
-      age: view.age,
       maskedContact: view.maskedContact,
       contactType: view.contactType,
       unlockedAt: record.unlockedAt,

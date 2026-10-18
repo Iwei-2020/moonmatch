@@ -51,7 +51,6 @@ Page({
       return {
         profileId: item.profileId || '',
         gender: item.gender,
-        age: item.age,
         masked: item.maskedContact || item.masked || '',
         contactType: item.contactType,
         ticketId: item.ticketId || '',
@@ -70,7 +69,8 @@ Page({
   },
 
   goFetch() {
-    tt.navigateTo({ url: ROUTES[PAGES.FETCH] });
+    // 取签流程已内联于首页，此处仅回到首页发起取签
+    tt.reLaunch({ url: ROUTES[PAGES.HOME] });
   },
 
   goBack() {

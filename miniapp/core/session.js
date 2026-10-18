@@ -71,7 +71,7 @@ function createSession(storage, options) {
   /**
    * 写入档案摘要。**无论上游传入什么，缘签一律经 maskContact 重新掩码**，
    * 并对整条记录断言无明文，断言不通过则拒绝写入。
-   * @param {object} input { profile_no?, gender?, age?, contact_type?, contact_masked|contact?, status?, reject_reason? }
+   * @param {object} input { profile_no?, gender?, contact_type?, contact_masked|contact?, status?, reject_reason? }
    * @returns {boolean} 是否成功落盘
    */
   function setProfile(input) {
@@ -84,7 +84,6 @@ function createSession(storage, options) {
     const record = {
       profile_no: typeof input.profile_no === 'string' ? input.profile_no : '',
       gender: typeof input.gender === 'string' ? input.gender : '',
-      age: Number(input.age) || 0,
       contact_type: contactType,
       contact_masked: maskContact(contactType, rawContact), // 只保留掩码形态
       status,

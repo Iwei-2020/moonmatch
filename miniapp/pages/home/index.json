@@ -1,5 +1,7 @@
 {
   "usingComponents": {
-    "audit-badge": "../../components/audit-badge/index"
+    "audit-badge": "../../components/audit-badge/index",
+    "match-card": "../../components/match-card/index",
+    "unlock-popup": "../../components/unlock-popup/index"
   }
 }

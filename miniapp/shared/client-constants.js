@@ -51,7 +51,6 @@ const PAGES = {
   HOME: 'P-01',
   REGISTER: 'P-02',
   PROFILE: 'P-03',
-  FETCH: 'P-04',
   UNLOCKS: 'P-05',
   REPORT: 'P-06',
   LEGAL: 'P-07',
@@ -62,7 +61,6 @@ const ROUTES = {
   [PAGES.HOME]: '/pages/home/index',
   [PAGES.REGISTER]: '/pages/register/index',
   [PAGES.PROFILE]: '/pages/profile/index',
-  [PAGES.FETCH]: '/pages/fetch/index',
   [PAGES.UNLOCKS]: '/pages/unlocks/index',
   [PAGES.REPORT]: '/pages/report/index',
   [PAGES.LEGAL]: '/pages/legal/index',
@@ -114,13 +112,7 @@ const LIMITS = {
   NEW_USER_WINDOW_MS: 86400000,
   FREE_REVISIT_MS: 2592000000, // 已解锁 30 天内免费复看
   AD_FAILURE_EXEMPT: 3, // 广告连续失败 N 次触发当日豁免一次
-  AGE_MIN: 18,
-  AGE_MAX: 60,
-  MATCH_AGE_STEPS: [5, 8, 12, 99], // 年龄邻近梯度 = relaxationLevel 0..3
 };
-
-/** 匹配结果放宽层级语义（埋点 match_result.relaxation_level） */
-const RELAXATION_LABEL = ['±5 岁', '±8 岁', '±12 岁', '不限年龄'];
 
 /** 档案状态（客户端展示与 audit-badge 组件共用） */
 const PROFILE_STATUS = {
@@ -140,13 +132,13 @@ const AD = {
 /**
  * 文案（缘签隐喻统一词表）
  *
- * 词表：联系方式 → 「缘签」；登记入口 → 「拿一个」；获取入口 → 「取一个」；广告揭开 → 「解签」。
+ * 词表：联系方式 → 「缘签」；登记入口 → 「留一个」；获取入口 → 「取一个」；广告揭开 → 「解签」。
  * 全站不再出现「联系方式」「手机号」「抖音号」这类直白描述，也不对用户做号码类型的区分。
  * 文案可读性优先，功能语义（字段名 / 状态键 / 错误码 / 埋点）一律保持原样不变。
  */
 const COPY = {
   HOME_TAGLINE: '留一个缘签，看看谁在等你',
-  BTN_REGISTER: '拿一个',
+  BTN_REGISTER: '留一个',
   BTN_FETCH: '取一个',
   BTN_UNLOCK: '看广告解签',
   BTN_COPY: '复制缘签',
@@ -161,12 +153,21 @@ const COPY = {
   MATCHING: '正在为你寻缘…',
   EXPIRED: '该缘签已失效',
   AD_FAILED: '广告加载失败，请稍后重试',
+  FETCH_FAIL: '取签失败，请稍后重试',
+  UNLOCKED_OK: '已解签，可复制缘签',
+  AD_INCOMPLETE: '未完整观看，未发放、不扣次数',
   HOME_DISCLAIMER: '本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实',
-  REGISTER_HINT: '填 3 项，10 秒完成；你的缘签在你亲手揭开前，谁都不会看到',
+  REGISTER_HINT: '填 2 项，10 秒完成；你的缘签在你亲手揭开前，谁都不会看到',
   REPORT_DONE: '举报已提交，我们会尽快核实',
   AUDIT_PENDING: '资料审核中',
   REJECTED_PREFIX: '已驳回：',
   CHANGE_CONTACT_NOTICE: '变更缘签需重新审核',
+  /* 取签浮层：选签筒 → 看广告 → 展示缘签 */
+  POOL_TITLE: '想取哪一签？',
+  POOL_MALE: '男签',
+  POOL_FEMALE: '女签',
+  POOL_NOTE: '选定后随机为你取 1 份缘签；取签免费，完整观看 1 条激励视频即可解签',
+  POOL_CANCEL: '再想想',
   /* 首页三味：缘分 / 运气 / 相遇 */
   HOME_FATE_LABEL: '缘分',
   HOME_FATE_TEXT: '月老已为你记下名字，一线牵起，只待相逢',
@@ -184,7 +185,6 @@ module.exports = {
   EVENTS,
   CONTACT_TYPES,
   LIMITS,
-  RELAXATION_LABEL,
   PROFILE_STATUS,
   AD,
   COPY,

@@ -22,13 +22,12 @@ const ROOT = path.resolve(__dirname, '..');
 const MINIAPP = path.join(ROOT, 'miniapp');
 const SERVER = path.join(ROOT, 'server');
 
-/** P-01…P-07 页面清单（说明书 §4）：路由 → 页面名，作为页数基线 */
+/** 页面清单（说明书 §4）：路由 → 页面名，作为页数基线（取签流程已内联到 P-01，不再单设取签页） */
 const PAGE_BASELINE = {
   'pages/home/index': 'P-01 首页',
   'pages/register/index': 'P-02 登记',
   'pages/profile/index': 'P-03 我的档案',
-  'pages/fetch/index': 'P-04 获取结果卡',
-  'pages/unlocks/index': 'P-05 解锁记录',
+  'pages/unlocks/index': 'P-05 缘签簿',
   'pages/report/index': 'P-06 举报与反馈',
   'pages/legal/index': 'P-07 协议与隐私',
 };
