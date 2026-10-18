@@ -164,8 +164,8 @@ const COPY = {
   CHANGE_CONTACT_NOTICE: '变更缘签需重新审核',
   /* 取签浮层：选签筒 → 看广告 → 展示缘签 */
   POOL_TITLE: '想取哪一签？',
-  POOL_MALE: '男签',
-  POOL_FEMALE: '女签',
+  POOL_MALE: '♂',
+  POOL_FEMALE: '♀',
   POOL_NOTE: '选定后随机为你取 1 份缘签；取签免费，完整观看 1 条激励视频即可解签',
   POOL_CANCEL: '再想想',
   /* 首页三味：缘分 / 运气 / 相遇 */

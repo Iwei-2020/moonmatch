@@ -51,48 +51,58 @@
   <view class="mm-disclaimer home__disclaimer">{{disclaimer}}</view>
 </view>
 
-<!-- 取签浮层：选男/女签筒 → 看广告 → 展示缘签（不跳转新页面） -->
-<view tt:if="{{overlay}}" class="mm-mask home__ov" bindtap="closeOverlay">
+<!-- 内联浮层：留一个（表单）/ 取一个（选男/女签筒 → 看广告 → 展示缘签），均不跳转新页面 -->
+<view tt:if="{{overlay}}" class="home__ov" bindtap="closeOverlay">
   <view class="home__ov-panel" catchtap="noop">
-    <!-- ① 选签筒 -->
-    <block tt:if="{{stage === 'pool'}}">
-      <view class="home__ov-title">{{poolTitle}}</view>
-      <view class="home__pool">
-        <view
-          tt:for="{{poolOptions}}"
-          tt:key="value"
-          class="home__pool-btn"
-          data-value="{{item.value}}"
-          bindtap="onChoosePool"
-        >{{item.label}}</view>
-      </view>
-      <view class="home__ov-note">{{poolNote}}</view>
-      <button class="mm-btn mm-btn--ghost home__ov-btn" bindtap="closeOverlay">{{poolCancelText}}</button>
-    </block>
+    <scroll-view scroll-y class="home__ov-scroll">
+      <!-- 留一个：内联留缘签表单 -->
+      <block tt:if="{{overlayMode === 'register'}}">
+        <profile-form bind:done="onFormDone" />
+      </block>
 
-    <!-- ② 匹配中 -->
-    <block tt:elif="{{stage === 'matching'}}">
-      <view class="home__ov-spin"></view>
-      <view class="home__ov-text">{{matchingText}}</view>
-    </block>
+      <!-- 取一个 -->
+      <block tt:else>
+        <!-- ① 选签筒 -->
+        <block tt:if="{{stage === 'pool'}}">
+          <view class="home__ov-title">{{poolTitle}}</view>
+          <view class="home__pool">
+            <view
+              tt:for="{{poolOptions}}"
+              tt:key="value"
+              class="home__pool-btn"
+              data-value="{{item.value}}"
+              bindtap="onChoosePool"
+            >{{item.label}}</view>
+          </view>
+          <view class="home__ov-note">{{poolNote}}</view>
+          <button class="mm-btn mm-btn--ghost home__ov-btn" bindtap="closeOverlay">{{poolCancelText}}</button>
+        </block>
 
-    <!-- ③ 池空 / 达上限 -->
-    <block tt:elif="{{stage === 'empty' || stage === 'limit'}}">
-      <view class="home__ov-text">{{stage === 'empty' ? emptyText : limitText}}</view>
-      <button class="mm-btn mm-btn--ghost home__ov-btn" bindtap="closeOverlay">知道了</button>
-    </block>
+        <!-- ② 匹配中 -->
+        <block tt:elif="{{stage === 'matching'}}">
+          <view class="home__ov-spin"></view>
+          <view class="home__ov-text">{{matchingText}}</view>
+        </block>
 
-    <!-- ④ 展示缘签 -->
-    <block tt:else>
-      <match-card
-        card="{{card}}"
-        mode="{{cardMode}}"
-        bind:unlock="onUnlock"
-        bind:report="onCardReport"
-      />
-      <view class="home__ov-count">今日剩余缘签 {{remain}} 个</view>
-      <button class="mm-btn mm-btn--ghost home__ov-btn" bindtap="closeOverlay">收起</button>
-    </block>
+        <!-- ③ 池空 / 达上限 -->
+        <block tt:elif="{{stage === 'empty' || stage === 'limit'}}">
+          <view class="home__ov-text">{{stage === 'empty' ? emptyText : limitText}}</view>
+          <button class="mm-btn mm-btn--ghost home__ov-btn" bindtap="closeOverlay">知道了</button>
+        </block>
+
+        <!-- ④ 展示缘签 -->
+        <block tt:else>
+          <match-card
+            card="{{card}}"
+            mode="{{cardMode}}"
+            bind:unlock="onUnlock"
+            bind:report="onCardReport"
+          />
+          <view class="home__ov-count">今日剩余缘签 {{remain}} 个</view>
+          <button class="mm-btn mm-btn--ghost home__ov-btn" bindtap="closeOverlay">收起</button>
+        </block>
+      </block>
+    </scroll-view>
   </view>
 </view>
 

@@ -1,49 +1,8 @@
-<!-- P-02 留缘签 · 半屏表单（仅 2 个字段） -->
+<!-- P-02 留缘签 · 半屏表单（表单元件与首页「留一个」浮层共用） -->
 <view class="mm-page reg">
   <view class="reg__backdrop"></view>
 
   <view class="reg__sheet">
-    <view class="reg__title">{{title}}</view>
-    <view class="mm-sub reg__hint">{{hint}}</view>
-
-    <!-- ② 性别（胶囊二选一） -->
-    <view class="reg__label">性别</view>
-    <view class="reg__pills">
-      <view
-        tt:for="{{genderOptions}}"
-        tt:key="value"
-        class="reg__pill {{gender === item.value ? 'reg__pill--on' : ''}}"
-        data-value="{{item.value}}"
-        bindtap="onGender"
-      >{{item.label}}</view>
-    </view>
-
-    <!-- ③ 缘签（单一输入，不区分号码类型；掩码回显） -->
-    <view class="reg__label">缘签</view>
-    <input
-      class="reg__input"
-      value="{{contact}}"
-      placeholder="填入一组可被搜索到的号码或 ID"
-      bindinput="onContact"
-    />
-    <view class="reg__masked">{{contactMasked}}</view>
-    <view class="reg__tip">输入过程与回显均为掩码，明文不进入视图层</view>
-
-    <!-- ⑤ 协议勾选 -->
-    <checkbox-group class="reg__agree" bindchange="onAgree">
-      <label class="reg__agree-row">
-        <checkbox value="agree" checked="{{agreed}}" />
-        <view class="reg__agree-text">{{agreeText}}</view>
-      </label>
-    </checkbox-group>
-    <view class="reg__link" bindtap="goLegal">查看《用户协议》《隐私政策》</view>
-
-    <!-- ⑥ 提交 -->
-    <button
-      class="mm-btn {{submitting ? 'mm-btn--disabled' : 'mm-btn--primary'}} reg__submit"
-      disabled="{{submitting}}"
-      bindtap="onSubmit"
-    >{{submitting ? submittingText : submitText}}</button>
-    <view tt:if="{{submitting}}" class="reg__tip">提交期间按钮锁定，不可重复提交</view>
+    <profile-form bind:done="onDone" />
   </view>
 </view>

@@ -33,7 +33,7 @@ const PAGE_BASELINE = {
 };
 
 /** 组件基线：说明书 §4「关键交互组件」 */
-const COMPONENT_BASELINE = ['match-card', 'unlock-popup', 'contact-field', 'audit-badge'];
+const COMPONENT_BASELINE = ['match-card', 'unlock-popup', 'contact-field', 'profile-form', 'audit-badge'];
 
 /** 云函数基线：说明书 §2 / §5 接口契约（客户端 core/cloud.js 按同名路径调用） */
 const FUNCTION_BASELINE = [

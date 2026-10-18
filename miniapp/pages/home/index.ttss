@@ -316,8 +316,15 @@
   margin-top: 40rpx;
 }
 
-/* 取签浮层：选签筒 → 匹配中 → 池空/上限 → 展示缘签 */
+/* 内联浮层：点击后浮起（遮罩 + 贴底浮层），选签筒 → 匹配中 → 池空/上限 → 展示缘签 */
 .home__ov {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background: rgba(58, 43, 46, 0.46);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -326,10 +333,17 @@
 .home__ov-panel {
   width: 100%;
   box-sizing: border-box;
-  padding: 40rpx 32rpx 48rpx;
+  max-height: 86vh;
   border-radius: 32rpx 32rpx 0 0;
-  background: #FFFDFA;
+  background: #FFF8F0;
   box-shadow: 0 -8rpx 40rpx rgba(58, 43, 46, 0.16);
+  overflow: hidden;
+}
+
+.home__ov-scroll {
+  max-height: 86vh;
+  box-sizing: border-box;
+  padding: 40rpx 32rpx 48rpx;
 }
 
 .home__ov-title {
@@ -348,15 +362,13 @@
 
 .home__pool-btn {
   flex: 1;
-  height: 140rpx;
-  line-height: 140rpx;
+  height: 160rpx;
+  line-height: 160rpx;
   text-align: center;
   border-radius: 24rpx;
   border: 1rpx solid rgba(194, 64, 47, 0.32);
   background: linear-gradient(180deg, rgba(253, 241, 229, 0.92), rgba(255, 253, 250, 0.92));
-  font-family: "Songti SC", "LXGW WenKai", serif;
-  font-size: 34rpx;
-  letter-spacing: 0.14em;
+  font-size: 68rpx;
   color: #A32E22;
 }
 

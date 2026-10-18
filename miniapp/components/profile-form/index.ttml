@@ -1,0 +1,45 @@
+<!-- profile-form · 留缘签表单（仅 2 个字段：性别 / 缘签） -->
+<view class="pf">
+  <view class="pf__title">{{title}}</view>
+  <view class="mm-sub pf__hint">{{hint}}</view>
+
+  <!-- ① 性别（胶囊二选一） -->
+  <view class="pf__label">性别</view>
+  <view class="pf__pills">
+    <view
+      tt:for="{{genderOptions}}"
+      tt:key="value"
+      class="pf__pill {{gender === item.value ? 'pf__pill--on' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onGender"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- ② 缘签（单一输入，不区分号码类型；掩码回显） -->
+  <view class="pf__label">缘签</view>
+  <input
+    class="pf__input"
+    value="{{contact}}"
+    placeholder="填入一组可被搜索到的号码或 ID"
+    bindinput="onContact"
+  />
+  <view class="pf__masked">{{contactMasked}}</view>
+  <view class="pf__tip">输入过程与回显均为掩码，明文不进入视图层</view>
+
+  <!-- ③ 协议勾选 -->
+  <checkbox-group class="pf__agree" bindchange="onAgree">
+    <label class="pf__agree-row">
+      <checkbox value="agree" checked="{{agreed}}" />
+      <view class="pf__agree-text">{{agreeText}}</view>
+    </label>
+  </checkbox-group>
+  <view class="pf__link" bindtap="goLegal">查看《用户协议》《隐私政策》</view>
+
+  <!-- ④ 提交 -->
+  <button
+    class="mm-btn {{submitting ? 'mm-btn--disabled' : 'mm-btn--primary'}} pf__submit"
+    disabled="{{submitting}}"
+    bindtap="onSubmit"
+  >{{submitting ? submittingText : submitText}}</button>
+  <view tt:if="{{submitting}}" class="pf__tip">提交期间按钮锁定，不可重复提交</view>
+</view>

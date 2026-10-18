@@ -2,6 +2,7 @@
   "usingComponents": {
     "audit-badge": "../../components/audit-badge/index",
     "match-card": "../../components/match-card/index",
-    "unlock-popup": "../../components/unlock-popup/index"
+    "unlock-popup": "../../components/unlock-popup/index",
+    "profile-form": "../../components/profile-form/index"
   }
 }

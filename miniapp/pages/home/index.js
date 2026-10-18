@@ -55,8 +55,9 @@ Page({
     ],
     disclaimer: COPY.HOME_DISCLAIMER,
 
-    /* 取签浮层：pool → matching → card / empty / limit */
+    /* 内联浮层：mode = fetch（取签）/ register（留缘签） */
     overlay: false,
+    overlayMode: 'fetch',
     stage: 'pool',
     poolTitle: COPY.POOL_TITLE,
     poolNote: COPY.POOL_NOTE,
@@ -115,13 +116,14 @@ Page({
     });
   },
 
-  /** 取一个：恒可点，打开内联取签浮层（不再跳转新页面） */
+  /** 取一个：恒可点，打开内联取签浮层（不跳转新页面） */
   onTapTake() {
     track(EVENTS.HOME_ENTRY_CLICK, { entry: 'fetch' });
     this.pendingProfileId = '';
     this.taskToken = '';
     this.setData({
       overlay: true,
+      overlayMode: 'fetch',
       stage: 'pool',
       card: null,
       cardMode: 'locked',
@@ -132,11 +134,21 @@ Page({
     });
   },
 
-  /** 留一个：未留缘签去登记页，已留去我的缘签 */
+  /** 留一个：未留缘签 / 已驳回内联留缘签；已留则查看我的缘签 */
   onTapKeep() {
     track(EVENTS.HOME_ENTRY_CLICK, { entry: 'register' });
-    const url = this.data.state === 'unregistered' ? ROUTES[PAGES.REGISTER] : ROUTES[PAGES.PROFILE];
-    tt.navigateTo({ url });
+    const state = this.data.state;
+    if (state === 'pending' || state === 'active') {
+      tt.navigateTo({ url: ROUTES[PAGES.PROFILE] });
+      return;
+    }
+    this.setData({ overlay: true, overlayMode: 'register', popupVisible: false });
+  },
+
+  /** 内联表单提交成功 / 已登记：收起浮层并刷新档案状态 */
+  onFormDone() {
+    this.setData({ overlay: false, overlayMode: 'fetch', popupVisible: false });
+    this.loadProfile();
   },
 
   goLegal() {
@@ -148,8 +160,8 @@ Page({
   noop() {},
 
   closeOverlay() {
-    if (this.data.stage === 'matching') return;
-    this.setData({ overlay: false, stage: 'pool', popupVisible: false });
+    if (this.data.overlayMode === 'fetch' && this.data.stage === 'matching') return;
+    this.setData({ overlay: false, overlayMode: 'fetch', stage: 'pool', popupVisible: false });
   },
 
   /** 选定男/女签筒后立即取签；命中锁定态时自动进入看广告解签 */

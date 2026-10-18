@@ -1,0 +1,101 @@
+/* profile-form · 留缘签表单（Token 取自线稿说明 §一，色值冻结） */
+.pf__title {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 34rpx;
+  letter-spacing: 0.08em;
+  color: #3A2B2E;
+}
+
+.pf__hint {
+  margin: 12rpx 0 32rpx;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.pf__label {
+  margin: 28rpx 0 14rpx;
+  font-size: 24rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.pf__pills {
+  display: flex;
+  gap: 20rpx;
+}
+
+.pf__pill {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.55);
+  color: #A32E22;
+  font-size: 27rpx;
+}
+
+.pf__pill--on {
+  background: #C2402F;
+  border-color: #C2402F;
+  color: #FFF8F0;
+  font-weight: 600;
+}
+
+.pf__input {
+  height: 88rpx;
+  padding: 0 24rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.28);
+  background: #FFFDFA;
+  font-size: 27rpx;
+  color: #3A2B2E;
+}
+
+.pf__masked {
+  margin-top: 14rpx;
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 28rpx;
+  letter-spacing: 0.1em;
+  color: #B9AFA6;
+}
+
+.pf__tip {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.pf__agree {
+  margin-top: 32rpx;
+}
+
+.pf__agree-row {
+  display: flex;
+  align-items: center;
+}
+
+.pf__agree-text {
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: #3A2B2E;
+  margin-left: 10rpx;
+}
+
+.pf__link {
+  margin-top: 12rpx;
+  font-size: 23rpx;
+  color: #A32E22;
+}
+
+.pf__submit {
+  margin-top: 40rpx;
+  height: 92rpx;
+  line-height: 92rpx;
+  font-size: 29rpx;
+  border-radius: 999rpx;
+  background: #C2402F;
+  color: #FFF8F0;
+  font-weight: 600;
+}
