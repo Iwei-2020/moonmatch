@@ -17,7 +17,7 @@
  */
 
 const { ERROR_CODES, COPY, EVENTS, CONTACT_TYPES } = require('../../shared/client-constants.js');
-const cloud = require('../../core/cloud.js');
+const { callActive } = require('../../core/cloud.js');
 const { track } = require('../../core/tracker.js');
 
 /** 复制失败按 ERROR_CODES 收敛文案（client-constants 未覆盖的码收敛为简短提示） */
@@ -62,14 +62,14 @@ Component({
      * 复制：内部调 revealContact 取明文 → 直接写剪贴板 → toast。
      * 明文只活在本次调用的局部变量中，绝不经 setData。
      */
-    onCopy() {
+    async onCopy() {
       if (this.data.state !== 'unlocked' || this.data.copying) return;
 
       const profileId = this.data.profileId;
       this.setData({ copying: true });
 
       // 语义化云封装：无云能力时返回 { ok: false }，不抛错
-      const res = cloud.revealContact({ profileId, ticketId: this.data.ticketId }) || {};
+      const res = await callActive('revealContact', { profileId, ticketId: this.data.ticketId });
 
       if (!res.ok || !res.data || !res.data.contact) {
         this.setData({ copying: false });

@@ -216,4 +216,24 @@ function createTracker(options) {
   };
 }
 
-module.exports = { createTracker, SDK_VERSION, BATCH_SIZE, QUEUE_LIMIT, FLUSH_INTERVAL_MS };
+/**
+ * 页面 / 组件层的统一上报入口：取装配层（app.js 的 `globalData.tracker`）已装配的实例。
+ * tracker 未就绪（无云能力 / 异常启动路径）时静默返回 false，**绝不抛出、绝不打断页面渲染**。
+ * 实例本身仍由 `createTracker` 在装配层创建，页面与组件只经本函数取用，不各自持有、不感知平台 API。
+ * @param {string} name 事件名（取自冻结契约 EVENTS；未登记事件名由实例侧丢弃并计数）
+ * @param {object} [payload]
+ * @returns {boolean}
+ */
+function track(name, payload) {
+  let tracker = null;
+  try {
+    const app = typeof getApp === 'function' ? getApp() : null;
+    tracker = (app && app.globalData && app.globalData.tracker) || null;
+  } catch (err) {
+    tracker = null;
+  }
+  if (!tracker || typeof tracker.track !== 'function') return false;
+  return tracker.track(name, payload);
+}
+
+module.exports = { createTracker, track, SDK_VERSION, BATCH_SIZE, QUEUE_LIMIT, FLUSH_INTERVAL_MS };
