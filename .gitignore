@@ -1,0 +1,12 @@
+# 操作系统
+.DS_Store
+
+# 依赖：小程序包内零依赖；仓库根不安装 node_modules。
+# 服务端唯一的运行时依赖 @open-dy/node-server-sdk 只在
+# build/cloud-functions/moonmatch-api/package.json 声明，由抖音云平台在部署时安装
+# （既不进小程序包，也不在仓库根安装）。
+node_modules/
+npm-debug.log*
+
+# 说明：build/cloud-functions/** 是「可直接部署」的自包含产物（由 tools/gen-cloud-functions.js 生成），
+# 与已发布线上版本逐字节一致，属交付物，**必须入库** —— 因此不排除整个 build/。

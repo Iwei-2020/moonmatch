@@ -1,0 +1,53 @@
+<!-- P-06 举报与反馈 · 未提交 / 已提交 -->
+<view class="mm-page rep">
+  <view class="rep__hd">
+    <view class="rep__back" bindtap="goBack">‹ 返回</view>
+    <view class="rep__title">举报与反馈</view>
+    <view class="rep__spacer"></view>
+  </view>
+
+  <!-- ① 未提交 -->
+  <block tt:if="{{!submitted}}">
+    <view class="mm-card rep__card">
+      <view class="rep__label">举报类型</view>
+      <view class="rep__reasons">
+        <view
+          tt:for="{{reasons}}"
+          tt:key="value"
+          class="rep__reason {{reasonType === item.value ? 'rep__reason--on' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="onReason"
+        >{{item.label}}</view>
+      </view>
+
+      <view class="rep__divider"></view>
+
+      <view class="rep__label">补充说明（选填）</view>
+      <textarea
+        class="rep__note"
+        value="{{note}}"
+        placeholder="{{notePlaceholder}}"
+        bindinput="onNote"
+      />
+    </view>
+
+    <button
+      class="mm-btn {{submitting ? 'mm-btn--disabled' : 'mm-btn--primary'}} rep__submit"
+      disabled="{{submitting}}"
+      bindtap="onSubmit"
+    >{{submitText}}</button>
+    <view class="rep__secret">{{secretText}}</view>
+  </block>
+
+  <!-- ② 已提交 -->
+  <block tt:else>
+    <view class="rep__done">
+      <view class="rep__ring"><view class="rep__check">✓</view></view>
+      <view class="rep__done-title">{{doneText}}</view>
+      <view class="mm-sub rep__done-desc">{{doneDesc}}</view>
+      <button class="mm-btn mm-btn--ghost rep__back-btn" bindtap="goBack">{{backText}}</button>
+    </view>
+  </block>
+
+  <view class="mm-disclaimer rep__disclaimer">{{disclaimer}}</view>
+</view>

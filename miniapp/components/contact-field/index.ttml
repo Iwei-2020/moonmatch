@@ -1,0 +1,18 @@
+<!-- contact-field · 三态渲染（说明书 §6.4）：锁定 / 已解锁 / 失效 -->
+<view class="cf cf--{{state}}">
+  <view class="cf__row">
+    <view class="mm-mask cf__mask">{{masked}}</view>
+    <view class="cf__icon">{{icon}}</view>
+  </view>
+
+  <view tt:if="{{state === 'unlocked'}}" class="cf__act">
+    <button
+      class="mm-btn mm-btn--primary cf__copy"
+      disabled="{{copying}}"
+      bindtap="onCopy"
+    >{{copyText}}</button>
+    <view class="cf__notice">{{noticeText}}</view>
+  </view>
+
+  <view tt:if="{{state === 'expired'}}" class="cf__dead">{{deadText}}</view>
+</view>

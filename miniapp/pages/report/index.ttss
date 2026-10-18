@@ -1,0 +1,138 @@
+/* P-06 举报与反馈 · Token 取自线稿说明 §一（色值冻结） */
+.rep {
+  min-height: 100vh;
+}
+
+.rep__hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.rep__back {
+  font-size: 24rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.rep__title {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 32rpx;
+  letter-spacing: 0.1em;
+  color: #3A2B2E;
+}
+
+.rep__spacer {
+  width: 60rpx;
+}
+
+.rep__card {
+  background: #FDF1E5;
+}
+
+.rep__label {
+  font-size: 23rpx;
+  color: rgba(58, 43, 46, 0.62);
+  margin-bottom: 16rpx;
+}
+
+.rep__reasons {
+  display: flex;
+  gap: 18rpx;
+}
+
+.rep__reason {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.28);
+  background: #FFFDFA;
+  font-size: 25rpx;
+  color: #3A2B2E;
+}
+
+.rep__reason--on {
+  border-color: #C2402F;
+  background: rgba(194, 64, 47, 0.08);
+  color: #A32E22;
+  font-weight: 600;
+}
+
+.rep__divider {
+  height: 1rpx;
+  background: rgba(194, 64, 47, 0.28);
+  margin: 28rpx 0;
+}
+
+.rep__note {
+  width: 100%;
+  min-height: 184rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.28);
+  background: #FFFDFA;
+  font-size: 25rpx;
+  color: #3A2B2E;
+  box-sizing: border-box;
+}
+
+.rep__submit {
+  margin-top: 36rpx;
+  height: 92rpx;
+  line-height: 92rpx;
+  font-size: 29rpx;
+  border-radius: 999rpx;
+}
+
+.rep__secret {
+  margin-top: 18rpx;
+  text-align: center;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.rep__done {
+  text-align: center;
+  padding: 60rpx 0 20rpx;
+}
+
+.rep__ring {
+  width: 108rpx;
+  height: 108rpx;
+  margin: 0 auto 28rpx;
+  border-radius: 50%;
+  border: 4rpx solid #3F7A5A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rep__check {
+  font-size: 46rpx;
+  color: #3F7A5A;
+  line-height: 1;
+}
+
+.rep__done-title {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 34rpx;
+  color: #3A2B2E;
+}
+
+.rep__done-desc {
+  margin: 14rpx 0 40rpx;
+}
+
+.rep__back-btn {
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 27rpx;
+  border-radius: 999rpx;
+}
+
+.rep__disclaimer {
+  margin-top: 40rpx;
+}

@@ -1,0 +1,9 @@
+{
+  "name": "moonmatch-cloud-functions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "抖音云函数服务部署产物（由 tools/gen-cloud-functions.js 生成，禁止手改）",
+  "dependencies": {
+    "@open-dy/node-server-sdk": "^1.2.2"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "match-card": "../../components/match-card/index",
+    "unlock-popup": "../../components/unlock-popup/index"
+  }
+}

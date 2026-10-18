@@ -1,0 +1,180 @@
+/* 全局设计令牌与通用类
+ *
+ * 依据：《项目说明书-月老办事处》§4（原型页面清单）、§6.4（联系方式三态渲染）、§8.4（隐私）；
+ * 《美术资产-全流程视觉P01-P07线稿说明》§1「通用线稿规范」与 §10「合规文案专区」。
+ *
+ * 本文件只落**画布基准 + 色值 Token + 通用类**（骨架阶段，UI 细节不在本阶段范围）。
+ * 色值 Token 逐条取自线稿说明 §1，**冻结、不得自行改数值**；间距经美术复核后可微调。
+ * 免责提示字号锁定 ≥24rpx（线稿说明 §1：不得低于 24rpx，禁止以更小字号或折叠隐藏）。
+ *
+ * 色值 Token：
+ *   --paper   #FFF8F0              页面底色（宣纸白）
+ *   --paper-2 #FDF1E5              次级底 / 卡片底
+ *   --ink     #3A2B2E              主文字（深墨棕）
+ *   --ink-soft rgba(58,43,46,.62)  次要文字
+ *   --red     #C2402F              朱红（主按钮 / 强调）
+ *   --red-deep #A32E22             朱红深（按下态 / 标题重音）
+ *   --gold    #D9A441              金（点缀线 / 角标）
+ *   --line    rgba(194,64,47,.28)  红线描边
+ *   --lock    #B9AFA6              锁定态灰（掩码号码）
+ *   --ok      #3F7A5A              成功态（解锁成功 / 审核通过）
+ *   --warn    #C98A2E              警示态（驳回 / 上限 / 失效）
+ */
+
+page {
+  /* ── 冻结色值 Token ─────────────────────────────────────────── */
+  --paper: #fff8f0;
+  --paper-2: #fdf1e5;
+  --ink: #3a2b2e;
+  --ink-soft: rgba(58, 43, 46, 0.62);
+  --red: #c2402f;
+  --red-deep: #a32e22;
+  --gold: #d9a441;
+  --line: rgba(194, 64, 47, 0.28);
+  --lock: #b9afa6;
+  --ok: #3f7a5a;
+  --warn: #c98a2e;
+
+  /* ── 圆角基准（线稿说明 §1：卡片 16px、按钮全圆、内嵌/输入框 12px）── */
+  --radius-card: 32rpx;
+  --radius-inner: 24rpx;
+  --radius-pill: 999rpx;
+
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: "PingFang SC", "Source Han Sans SC", -apple-system, sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+  min-height: 100%;
+}
+
+/* ── 页面容器：宣纸白底 + 左右安全边距 48rpx（线稿说明 §1）──────── */
+
+.mm-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 0 48rpx 48rpx;
+  background-color: var(--paper);
+}
+
+/* ── 文字 ─────────────────────────────────────────────────────── */
+
+.mm-title {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 48rpx;
+  line-height: 1.3;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.mm-sub {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.mm-muted {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* 底部常驻免责：12px（24rpx），不得更小、不得折叠（线稿说明 §1 / §10.1） */
+.mm-disclaimer {
+  margin-top: 32rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx dashed var(--line);
+  font-size: 24rpx;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+/* ── 卡片与行 ─────────────────────────────────────────────────── */
+
+.mm-card {
+  box-sizing: border-box;
+  padding: 36rpx 32rpx;
+  border: 2rpx solid var(--line);
+  border-radius: var(--radius-card);
+  background-color: var(--paper-2);
+}
+
+.mm-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── 按钮（通栏、全圆；主按钮朱红实心、次按钮描边）─────────────── */
+
+.mm-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 92rpx;
+  border-radius: var(--radius-pill);
+  font-size: 30rpx;
+  letter-spacing: 1rpx;
+}
+
+.mm-btn--primary {
+  background-color: var(--red);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.mm-btn--primary:active {
+  background-color: var(--red-deep);
+}
+
+.mm-btn--ghost {
+  border: 2rpx solid var(--red);
+  background-color: transparent;
+  color: var(--red);
+}
+
+.mm-btn--disabled {
+  background-color: var(--lock);
+  border-color: transparent;
+  color: var(--paper);
+  opacity: 0.72;
+}
+
+/* ── 状态徽标（audit-badge 视觉基底）──────────────────────────── */
+
+.mm-badge {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6rpx 20rpx;
+  border: 2rpx solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 22rpx;
+  line-height: 1.2;
+  color: var(--ink-soft);
+}
+
+.mm-badge--ok {
+  border-color: var(--ok);
+  background-color: rgba(63, 122, 90, 0.1);
+  color: var(--ok);
+}
+
+.mm-badge--warn {
+  border-color: var(--warn);
+  background-color: rgba(201, 138, 46, 0.16);
+  color: var(--warn);
+}
+
+/* ── 掩码号码：锁定态用 --lock 灰（说明书 §6.4 三态渲染）─────── */
+
+.mm-mask {
+  font-size: 34rpx;
+  letter-spacing: 2rpx;
+  color: var(--lock);
+}

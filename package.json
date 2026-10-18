@@ -1,0 +1,17 @@
+{
+  "name": "moonmatch",
+  "version": "0.1.0",
+  "private": true,
+  "description": "月老办事处（Moonmatch）· 抖音小程序 —— 双入口极简相亲工具（登记 / 获取）",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node tools/check-structure.js",
+    "gen": "node tools/gen-cloud-functions.js",
+    "gen:check": "node tools/gen-cloud-functions.js --check",
+    "verify": "npm test && npm run check && npm run gen:check"
+  }
+}

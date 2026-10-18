@@ -1,0 +1,53 @@
+<!-- unlock-popup · 5 态（线稿说明 §9.1）：须知 / 加载中 / 播放中 / 发放中 / 失败 -->
+<view tt:if="{{visible}}" class="mm-mask up" bindtap="onClose">
+  <view class="up__panel" catchtap="noop">
+    <view class="up__dots">
+      <view tt:for="{{dots}}" class="{{item.cls}}"></view>
+    </view>
+
+    <!-- ① 解锁须知 -->
+    <block tt:if="{{state === 'notice'}}">
+      <view class="up__title">{{noticeTitle}}</view>
+      <view class="up__msg">{{noticeText}}</view>
+      <view class="up__slot">广告位占位</view>
+      <button class="mm-btn mm-btn--primary up__btn" bindtap="onConfirm">{{confirmText}}</button>
+      <button class="mm-btn mm-btn--ghost up__btn" bindtap="onClose">{{cancelText}}</button>
+      <view class="up__note">可随时关闭播放；未完整观看不发放、不扣次数</view>
+    </block>
+
+    <!-- ② 广告加载中 -->
+    <block tt:elif="{{state === 'loading'}}">
+      <view class="up__title">{{loadingTitle}}</view>
+      <view class="up__spin"></view>
+      <view class="up__msg">{{loadingTip}}</view>
+      <button class="mm-btn mm-btn--disabled up__btn" disabled>加载中…</button>
+    </block>
+
+    <!-- ③ 播放中 -->
+    <block tt:elif="{{state === 'playing'}}">
+      <view class="up__title">{{playingTip}}</view>
+      <view class="up__slot up__slot--playing">
+        <view class="up__bar"></view>
+        <view class="up__close" catchtap="onClose">✕</view>
+      </view>
+      <view class="up__note">提前关闭不发放、不扣次数，可立即重试（冷却 ≥30s）</view>
+    </block>
+
+    <!-- ④ 奖励发放中 -->
+    <block tt:elif="{{state === 'granting'}}">
+      <view class="up__title">{{grantingTitle}}</view>
+      <view class="up__spin"></view>
+      <view class="up__msg">{{grantingText}}</view>
+    </block>
+
+    <!-- ⑤ 失败 / 达上限 -->
+    <block tt:else>
+      <view class="up__title">{{failTitle}}</view>
+      <view class="up__msg">{{failText}}</view>
+      <button class="mm-btn mm-btn--primary up__btn" bindtap="onRetry">{{retryText}}</button>
+      <button class="mm-btn mm-btn--ghost up__btn" bindtap="onClose">{{cancelText}}</button>
+      <view class="up__warn">{{limitText}}</view>
+      <view class="up__note">未发放、不扣次数；连续失败 3 次当日可豁免 1 次</view>
+    </block>
+  </view>
+</view>

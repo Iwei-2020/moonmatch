@@ -1,0 +1,1445 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>月老办事处 Moonmatch · 全流程视觉稿 P-01 → P-07（含组件专区）</title>
+<style>
+  :root{
+    /* ---- 冻结 Token（三份资产一致，不得自行改数值）---- */
+    --paper:#FFF8F0;
+    --paper-2:#FDF1E5;
+    --ink:#3A2B2E;
+    --ink-soft:rgba(58,43,46,.62);
+    --red:#C2402F;
+    --red-deep:#A32E22;
+    --gold:#D9A441;
+    --line:rgba(194,64,47,.28);
+    --lock:#B9AFA6;
+    --ok:#3F7A5A;
+    --warn:#C98A2E;
+    --radius-card:16px;
+    --radius-pill:999px;
+    --font-title:"Songti SC","LXGW WenKai",serif;
+    --font-body:"PingFang SC","Source Han Sans SC",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#EFE2D4}
+  body{font-family:var(--font-body);color:var(--ink);padding:28px 24px 64px;-webkit-font-smoothing:antialiased}
+
+  /* ---------------- 设计说明条 ---------------- */
+  .strip{max-width:1200px;margin:0 auto 32px;background:#FFFDFA;border:1px solid var(--line);
+    border-radius:18px;padding:20px 24px 18px;box-shadow:0 8px 22px rgba(58,43,46,.08)}
+  .strip-name{font-family:var(--font-title);font-size:24px;letter-spacing:.14em;color:var(--ink)}
+  .strip-name span{font-size:11px;letter-spacing:.34em;color:var(--gold);margin-left:10px;
+    font-family:var(--font-body);vertical-align:3px}
+  .strip-line{font-size:13px;line-height:1.8;color:var(--ink-soft);margin-top:6px}
+  .strip-line b{color:var(--red-deep);font-weight:600}
+  .strip-entry{font-size:12.5px;line-height:1.8;color:var(--ink-soft);margin-top:4px}
+  .strip-entry b{color:var(--ink);font-weight:600}
+  .tok-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+  .tok{display:flex;align-items:center;gap:7px;background:var(--paper);border:1px solid var(--line);
+    border-radius:var(--radius-pill);padding:5px 12px 5px 6px;font-size:11px}
+  .tok i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(58,43,46,.14);flex:none}
+  .tok b{font-family:var(--font-title);font-weight:600;color:var(--ink)}
+  .tok em{font-style:normal;color:var(--ink-soft);font-size:10.5px}
+  .strip-note{font-size:12px;line-height:1.65;color:var(--ink-soft);margin-top:14px;
+    border-top:1px dashed var(--line);padding-top:11px}
+
+  /* ---------------- 分节 ---------------- */
+  .sec{margin:0 auto 36px;max-width:1620px}
+  .sec-title{font-family:var(--font-title);font-size:19px;letter-spacing:.06em;color:var(--red-deep);
+    display:flex;align-items:center;gap:10px;padding:0 0 14px 2px}
+  .sec-title i{width:16px;height:2px;background:var(--red);border-radius:2px;flex:none}
+  .sub-title{font-size:13px;font-weight:600;color:var(--red-deep);letter-spacing:.04em;
+    margin:8px 0 16px 2px;padding-left:10px;border-left:3px solid var(--gold)}
+  .grid{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+
+  /* ---------------- 画框 ---------------- */
+  .frame{display:flex;flex-direction:column;gap:9px}
+  .frame-title{font-size:12px;font-weight:600;color:var(--red-deep);letter-spacing:.03em}
+  .phone{width:375px;min-height:664px;background:var(--paper);border:1px solid var(--line);
+    border-radius:26px;padding:20px 24px 22px;position:relative;overflow:hidden;
+    box-shadow:0 10px 26px rgba(58,43,46,.10)}
+  .phone.compact{min-height:0}
+  .phone > *{position:relative;z-index:1}
+
+  /* ---------------- 通用元件 ---------------- */
+  .rel{position:relative}
+  .num{position:absolute;width:16px;height:16px;border-radius:50%;border:1px solid var(--gold);
+    background:#FFFDFA;color:#B8862C;font-size:9px;line-height:15px;text-align:center;z-index:6}
+  .hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .brand{font-family:var(--font-title);font-size:21px;letter-spacing:.14em;color:var(--ink);line-height:1.2}
+  .brand-sub{font-size:9px;letter-spacing:.32em;color:var(--gold);margin-top:3px}
+  .page-title{font-family:var(--font-title);font-size:16px;letter-spacing:.10em;color:var(--ink)}
+  .back{font-size:12px;color:var(--ink-soft)}
+  .corner{display:flex;gap:6px;flex:none}
+  .icon-btn{width:30px;height:30px;border-radius:10px;border:1px solid var(--line);
+    background:#FFFDFA;display:flex;align-items:center;justify-content:center}
+  .tagline{font-size:12.5px;line-height:1.85;color:var(--ink-soft);max-width:300px}
+  .lattice{display:block;margin:14px auto 12px}
+  .moon-wrap{display:flex;justify-content:center;margin:6px 0 2px}
+  .moon-svg{width:120px;height:120px;display:block}
+  .moon-body{fill:var(--gold);opacity:.85}
+  .moon-hole{fill:var(--paper)}
+  .on-paper2 .moon-hole{fill:var(--paper-2)}
+  .rope{fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;opacity:.85}
+
+  .state-bar{font-size:11.5px;line-height:1.6;color:var(--ink);
+    background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+  .state-bar.warn{background:rgba(201,138,46,.10);border-color:rgba(201,138,46,.45);color:#8F6220}
+  .state-bar.ok{background:rgba(63,122,90,.09);border-color:rgba(63,122,90,.40);color:#31603F}
+  .state-bar.off{background:rgba(185,175,166,.16);border-color:rgba(185,175,166,.65);color:#6E645D}
+  .count-line{font-size:11.5px;color:var(--ink-soft);display:flex;justify-content:space-between}
+  .count-line b{font-family:var(--font-title);font-size:15px;color:var(--red-deep)}
+  .cta{display:flex;flex-direction:column;gap:10px}
+  .hint{font-size:11.5px;line-height:1.6;color:var(--warn);text-align:center}
+
+  .btn{display:block;width:100%;height:46px;border-radius:var(--radius-pill);border:none;
+    background:none;font-family:var(--font-body);font-size:14.5px;cursor:default;color:var(--ink)}
+  .btn.primary{background:var(--red);color:var(--paper);font-weight:600;
+    box-shadow:0 6px 16px rgba(194,64,47,.24)}
+  .btn.primary.deep{background:var(--red-deep)}
+  .btn.primary.lg{height:54px;font-size:16.5px;letter-spacing:.06em}
+  .btn.ghost{background:transparent;border:1px solid rgba(194,64,47,.55);color:var(--red-deep);font-weight:500}
+  .btn.off{background:#EFE4D9;border:1px solid rgba(185,175,166,.65);color:var(--lock);font-weight:500}
+  .btn.ok{background:var(--ok);color:var(--paper);font-weight:600}
+  .btn.sm{height:36px;font-size:12.5px}
+  .btn.inline{width:auto;padding:0 18px}
+  .btn.tiny{width:auto;height:28px;font-size:11.5px;padding:0 14px;border-radius:var(--radius-pill)}
+  .disclaimer{font-size:12px;line-height:1.6;color:var(--ink-soft);text-align:center;
+    border-top:1px dashed var(--line);padding-top:10px;margin-top:14px}
+
+  .card{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-card);padding:14px 16px}
+  .lab{font-size:11px;color:var(--ink-soft);letter-spacing:.02em}
+  .divider{height:1px;background:var(--line);margin:11px 0}
+
+  /* 掩码联系方式 */
+  .mask{font-family:var(--font-title);font-size:17px;letter-spacing:.10em;color:var(--lock)}
+  .contact{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:#FFFDFA;border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+  .contact.unlocked{border-color:rgba(63,122,90,.45);background:rgba(63,122,90,.06)}
+  .contact.unlocked .mask{color:var(--ink)}
+  .contact.dead{background:#F4ECE4;border-style:dashed;border-color:rgba(185,175,166,.7)}
+  .contact.dead .mask{color:var(--lock)}
+  .lock-ico{flex:none;display:flex;align-items:center}
+
+  /* 审核徽标 */
+  .audit{display:inline-block;font-size:11px;padding:3px 10px;border-radius:var(--radius-pill);border:1px solid;white-space:nowrap}
+  .audit.wait{color:#A97A1E;border-color:rgba(217,164,65,.62);background:rgba(217,164,65,.14)}
+  .audit.pass{color:var(--ok);border-color:rgba(63,122,90,.45);background:rgba(63,122,90,.10)}
+  .audit.reject{color:#A9631F;border-color:var(--warn);background:rgba(201,138,46,.16)}
+  .audit.off{color:#7A7069;border-color:rgba(185,175,166,.75);background:rgba(185,175,166,.16)}
+
+  /* ---------------- 半屏表单 ---------------- */
+  .sheet-phone{padding:0;height:730px;min-height:0}
+  .bg-page{position:absolute;inset:0;padding:20px 24px;opacity:.5}
+  .dim{position:absolute;inset:0;background:rgba(58,43,46,.44);z-index:2}
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:3;background:var(--paper);
+    border-top:1px solid var(--line);border-radius:24px 24px 26px 26px;padding:16px 24px 20px;
+    box-shadow:0 -12px 30px rgba(58,43,46,.18)}
+  .sheet-title{font-family:var(--font-title);font-size:17px;letter-spacing:.10em;color:var(--ink)}
+  .sheet-sub{font-size:11.5px;line-height:1.65;color:var(--ink-soft);margin-top:6px}
+  .field{margin-top:14px}
+  .field .lab{display:block;margin-bottom:8px}
+  .pills{display:flex;gap:10px}
+  .pill{flex:1;height:44px;line-height:42px;text-align:center;border-radius:var(--radius-pill);
+    border:1px solid var(--line);background:#FFFDFA;font-size:14px;color:var(--ink-soft)}
+  .pill.on{background:var(--red);color:var(--paper);border-color:var(--red);font-weight:600;
+    box-shadow:0 5px 14px rgba(194,64,47,.22)}
+  .input{height:44px;border-radius:12px;border:1px solid var(--line);background:#FFFDFA;
+    padding:0 13px;font-size:14px;color:var(--ink);display:flex;align-items:center;justify-content:space-between}
+  .input.ph{color:var(--lock)}
+  .input.dimmed{background:#F6EDE4;color:var(--ink-soft)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:var(--radius-pill);overflow:hidden;
+    background:#FFFDFA;margin-bottom:8px}
+  .seg-item{flex:1;height:36px;line-height:34px;text-align:center;font-size:12.5px;color:var(--ink-soft)}
+  .seg-item.on{background:rgba(194,64,47,.10);color:var(--red-deep);font-weight:600}
+  .agree{display:flex;align-items:flex-start;gap:9px;margin-top:16px;font-size:11.5px;line-height:1.55;color:var(--ink-soft)}
+  .cbox{flex:none;width:16px;height:16px;border-radius:5px;border:1px solid var(--line);
+    background:#FFFDFA;margin-top:1px;text-align:center;font-size:11px;line-height:15px;color:var(--paper)}
+  .cbox.on{background:var(--red);border-color:var(--red)}
+  .agree a{color:var(--red-deep);text-decoration:underline;text-underline-offset:2px}
+  .sheet .btn{margin-top:16px}
+  .spinner{width:22px;height:22px;border-radius:50%;border:2px solid rgba(194,64,47,.22);
+    border-top-color:var(--red);animation:spin .9s linear infinite;margin:0 auto}
+  .spinner.on-dark{border-color:rgba(255,248,240,.28);border-top-color:var(--paper)}
+  .spinner.sm{width:15px;height:15px;border-width:1.6px;display:inline-block;vertical-align:-3px;margin:0 6px 0 0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .btn-loading{display:flex;align-items:center;justify-content:center;gap:6px}
+
+  /* ---------------- 匹配卡片 match-card ---------------- */
+  .mc{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:18px 16px 16px;position:relative}
+  .mc-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .mc-title{font-family:var(--font-title);font-size:24px;letter-spacing:.08em;color:var(--ink)}
+  .mc-title small{font-size:13px;color:var(--ink-soft);font-family:var(--font-body);letter-spacing:0}
+  .mc-line{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .mc-sub{font-size:11px;color:var(--ink-soft)}
+  .mc-body{margin-top:14px}
+  .mc-note{font-size:11.5px;line-height:1.65;color:var(--ink-soft);margin-top:10px;text-align:center}
+  .mc .btn{margin-top:14px}
+  .mc.dead{background:#F4ECE4;border-style:dashed;border-color:rgba(185,175,166,.72)}
+  .mc.dead .mc-title{color:#7A7069}
+  .link-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--ink-soft)}
+  .link-row .lk{color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px}
+  .link-row .lk.accent{color:var(--red-deep);text-decoration:none}
+  .warn-bar{font-size:11.5px;line-height:1.6;color:#8F6220;background:rgba(201,138,46,.12);
+    border:1px solid rgba(201,138,46,.45);border-radius:10px;padding:8px 11px;margin-top:12px;text-align:center}
+  .ok-bar{font-size:11.5px;line-height:1.6;color:#31603F;background:rgba(63,122,90,.10);
+    border:1px solid rgba(63,122,90,.42);border-radius:10px;padding:8px 11px;margin-top:12px;text-align:center}
+  .compliance{font-size:12px;line-height:1.6;color:var(--red-deep);text-align:center;margin-top:12px}
+
+  /* 骨架屏 */
+  .skel{display:block;height:10px;border-radius:6px;
+    background:linear-gradient(90deg,rgba(58,43,46,.07),rgba(58,43,46,.17),rgba(58,43,46,.07))}
+  .finding{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:14px}
+
+  /* 空态 */
+  .empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 0 8px;text-align:center}
+  .empty-txt{font-size:12.5px;line-height:1.7;color:var(--ink-soft);max-width:260px}
+
+  /* ---------------- 解锁记录 ---------------- */
+  .quota{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;
+    color:var(--ink-soft);background:var(--paper-2);border:1px solid var(--line);
+    border-radius:12px;padding:9px 12px;margin-top:14px}
+  .quota b{font-family:var(--font-title);font-size:15px;color:var(--red-deep)}
+  .rec{display:flex;justify-content:space-between;gap:10px;background:var(--paper-2);
+    border:1px solid var(--line);border-radius:var(--radius-card);padding:12px 13px;margin-top:10px}
+  .rec-title{font-family:var(--font-title);font-size:16px;letter-spacing:.06em;color:var(--ink)}
+  .rec-time{font-size:11px;color:var(--ink-soft);margin-top:5px}
+  .rec-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .chip{font-size:10px;padding:2px 8px;border-radius:var(--radius-pill);border:1px solid}
+  .chip.ok{color:var(--ok);border-color:rgba(63,122,90,.42);background:rgba(63,122,90,.10)}
+  .chip.warn{color:#A9631F;border-color:rgba(201,138,46,.5);background:rgba(201,138,46,.14)}
+  .rec-r{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .rec-r .mask{font-size:14px}
+
+  /* ---------------- 举报 / 协议 ---------------- */
+  .radio-list{display:flex;flex-direction:column;gap:9px}
+  .radio{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink);
+    background:#FFFDFA;border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+  .radio .dot{flex:none;width:15px;height:15px;border-radius:50%;border:1px solid var(--line);background:#FFFDFA}
+  .radio.on{border-color:var(--red);background:rgba(194,64,47,.06);font-weight:600}
+  .radio.on .dot{border:4px solid var(--red);background:var(--paper)}
+  .textarea{min-height:92px;border-radius:12px;border:1px solid var(--line);background:#FFFDFA;
+    padding:11px 13px;font-size:12.5px;line-height:1.7;color:var(--ink)}
+  .textarea.ph{color:var(--lock)}
+  .success{display:flex;flex-direction:column;align-items:center;gap:12px;padding:26px 8px 6px;text-align:center}
+  .ok-ico{width:54px;height:54px;border-radius:50%;background:rgba(63,122,90,.12);
+    border:1px solid rgba(63,122,90,.45);display:flex;align-items:center;justify-content:center}
+  .success-title{font-family:var(--font-title);font-size:17px;letter-spacing:.06em;color:var(--ok)}
+  .success-sub{font-size:12px;line-height:1.7;color:var(--ink-soft);max-width:280px}
+  .legal-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;
+    color:var(--ink);padding:12px 2px;border-bottom:1px solid var(--line)}
+  .legal-row:last-child{border-bottom:none}
+  .legal-row .arrow{color:var(--lock);font-size:13px}
+  .legal-row.deep{color:var(--red-deep);font-weight:600}
+  .collect{margin-top:12px;border:1px dashed var(--line);border-radius:12px;padding:12px 13px;background:#FFFDFA}
+  .collect-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px}
+  .collect ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .collect li{font-size:11.5px;line-height:1.6;color:var(--ink-soft);padding-left:12px;position:relative}
+  .collect li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;
+    border-radius:50%;background:var(--red);opacity:.7}
+  .collect li b{color:var(--ink);font-weight:600}
+
+  /* ---------------- 弹层 unlock-popup ---------------- */
+  .pop-phone{padding:0;height:520px;min-height:0}
+  .pop-bg{position:absolute;inset:0;padding:20px 24px;opacity:.45}
+  .pop-dim{position:absolute;inset:0;background:rgba(58,43,46,.46);z-index:2}
+  .popup{position:absolute;left:24px;right:24px;top:50%;transform:translateY(-50%);z-index:3;
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:20px 18px 18px;box-shadow:0 16px 36px rgba(58,43,46,.24);text-align:center}
+  .pop-title{font-family:var(--font-title);font-size:16px;letter-spacing:.08em;color:var(--ink)}
+  .pop-txt{font-size:12.5px;line-height:1.75;color:var(--ink-soft);margin-top:10px}
+  .pop-txt b{color:var(--red-deep)}
+  .pop-media{height:132px;border-radius:12px;border:1px dashed var(--line);background:var(--paper-2);
+    display:flex;align-items:center;justify-content:center;margin-top:14px;position:relative}
+  .pop-media .ph-txt{font-size:11px;color:var(--lock)}
+  .pop-progress{position:absolute;left:12px;right:12px;bottom:10px;height:3px;border-radius:2px;
+    background:rgba(58,43,46,.12);overflow:hidden}
+  .pop-progress i{display:block;height:100%;width:62%;background:var(--red)}
+  .pop-close{position:absolute;right:12px;top:12px;width:22px;height:22px;border-radius:50%;
+    border:1px solid var(--line);background:#FFFDFA;font-size:13px;line-height:20px;color:var(--lock)}
+  .popup .btn{margin-top:16px}
+  .pop-step{display:flex;justify-content:center;gap:5px;margin-bottom:12px}
+  .pop-step i{width:14px;height:3px;border-radius:2px;background:rgba(58,43,46,.14)}
+  .pop-step i.on{background:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- ================= 设计说明条 ================= -->
+<div class="strip">
+  <div class="strip-name">月老办事处<span>MOONMATCH</span></div>
+  <div class="strip-line">抖音小程序 · 极简相亲信息交换工具 &nbsp;|&nbsp; 一句话定位：<b>留个联系方式，看看谁在等你</b></div>
+  <div class="strip-entry">全站仅两个业务入口：<b>登记我的资料</b>（写下自己的 1 条联系方式）· <b>获取一个联系方式</b>（随机出 1 张卡 → 完整观看 1 条激励视频 → 解锁并可复制）。无广场、无列表、无商业变现入口，且全部为纯文字档案，不出现真人素材。</div>
+  <div class="tok-row">
+    <div class="tok"><i style="background:#FFF8F0"></i><b>--paper</b><em>#FFF8F0</em></div>
+    <div class="tok"><i style="background:#FDF1E5"></i><b>--paper-2</b><em>#FDF1E5</em></div>
+    <div class="tok"><i style="background:#C2402F"></i><b>--red</b><em>#C2402F</em></div>
+    <div class="tok"><i style="background:#A32E22"></i><b>--red-deep</b><em>#A32E22</em></div>
+    <div class="tok"><i style="background:#D9A441"></i><b>--gold</b><em>#D9A441</em></div>
+    <div class="tok"><i style="background:#3A2B2E"></i><b>--ink</b><em>#3A2B2E</em></div>
+    <div class="tok"><i style="background:rgba(58,43,46,.62)"></i><b>--ink-soft</b><em>rgba(58,43,46,.62)</em></div>
+    <div class="tok"><i style="background:rgba(194,64,47,.28)"></i><b>--line</b><em>rgba(194,64,47,.28)</em></div>
+    <div class="tok"><i style="background:#B9AFA6"></i><b>--lock</b><em>#B9AFA6</em></div>
+    <div class="tok"><i style="background:#3F7A5A"></i><b>--ok</b><em>#3F7A5A</em></div>
+    <div class="tok"><i style="background:#C98A2E"></i><b>--warn</b><em>#C98A2E</em></div>
+    <div class="tok"><i style="background:#FFF8F0;border-radius:6px"></i><b>--radius-card</b><em>16px</em></div>
+    <div class="tok"><i style="background:#FFF8F0;border-radius:999px"></i><b>--radius-pill</b><em>999px</em></div>
+  </div>
+  <div class="strip-note">画布：竖屏 750rpx 基准 = 逻辑 375px 宽，左右安全边距 48rpx（=24px）。字体：标题 Songti SC / LXGW WenKai（serif），正文 PingFang SC / Source Han Sans SC（sans-serif）。
+  合规硬约束：稿内任何位置均不出现明文联系方式（一律掩码 <b>138****8888</b> / <b>dy_****</b>），不出现可扫描图形与站外引流字样，不含任何变现类元素；免责提示常驻且字号不低于 24rpx（=12px）。</div>
+</div>
+
+<!-- ================= P-01 首页 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>P-01 首页</h2>
+  <div class="grid">
+
+    <!-- ① 未登记 -->
+    <div class="frame">
+      <div class="frame-title">P-01 ① 未登记</div>
+      <div class="phone">
+        <div class="hdr rel">
+          <span class="num" style="left:-6px;top:20px">1</span>
+          <div>
+            <div class="brand">月老办事处</div>
+            <div class="brand-sub">MOONMATCH</div>
+          </div>
+          <div class="corner rel">
+            <span class="num" style="right:38px;top:-4px">9</span>
+            <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/><path d="M9 12.5h6M9 16h4"/></svg></div>
+            <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3.2v2.2M12 18.6v2.2M3.2 12h2.2M18.6 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M18 6l-1.6 1.6M7.6 16.4 6 18"/></svg></div>
+          </div>
+        </div>
+
+        <svg class="lattice" width="76" height="16" viewBox="0 0 76 16" aria-hidden="true">
+          <g fill="none" stroke="#C2402F" stroke-opacity=".28" stroke-width="1">
+            <path d="M0 8h22M54 8h22"/><rect x="28" y="2" width="5" height="5"/>
+            <rect x="28" y="9" width="5" height="5"/><rect x="35" y="2" width="5" height="5"/>
+            <rect x="35" y="9" width="5" height="5"/><rect x="42" y="2" width="5" height="5" stroke-opacity=".16"/>
+            <rect x="42" y="9" width="5" height="5" stroke-opacity=".16"/>
+          </g>
+        </svg>
+
+        <div class="moon-wrap rel">
+          <span class="num" style="left:70px;top:4px">2</span>
+          <svg class="moon-svg" viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="moon-body" cx="72" cy="56" r="30"/>
+            <circle class="moon-hole" cx="88" cy="48" r="28"/>
+            <path class="rope" d="M14 112C38 112 46 92 70 92s32 20 56 20"/>
+            <circle cx="70" cy="92" r="7" fill="none" stroke="#C2402F" stroke-width="2"/>
+            <path d="M63 92l-12 9M77 92l12 9" fill="none" stroke="#C2402F" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <p class="tagline rel" style="margin:2px auto 0;text-align:center">留个联系方式，看看谁在等你
+          <span class="num" style="right:-4px;top:-2px">3</span></p>
+
+        <div class="state-bar off rel" style="margin-top:16px">尚未登记 · 登记后即可获取他人联系方式
+          <span class="num" style="left:-6px;top:-6px">4</span></div>
+
+        <div class="count-line rel" style="margin-top:12px"><span>今日剩余获取次数</span><span><b>0</b> 次
+          <span class="num" style="right:-6px;top:-6px">5</span></span></div>
+
+        <div class="cta rel" style="margin-top:18px">
+          <span class="num" style="left:-6px;top:-4px">6</span>
+          <button class="btn primary">登记我的资料</button>
+          <span class="num" style="left:-6px;top:52px">7</span>
+          <button class="btn off">获取一个联系方式</button>
+          <div class="hint rel"><span class="num" style="left:-6px;top:0">8</span>先登记自己的资料，才能获取他人联系方式</div>
+        </div>
+
+        <div class="disclaimer rel"><span class="num" style="left:-6px;top:-4px">10</span>本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ② 已登记待审 -->
+    <div class="frame">
+      <div class="frame-title">P-01 ② 已登记待审</div>
+      <div class="phone">
+        <div class="hdr">
+          <div><div class="brand">月老办事处</div><div class="brand-sub">MOONMATCH</div></div>
+          <div class="corner">
+            <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/><path d="M9 12.5h6M9 16h4"/></svg></div>
+          </div>
+        </div>
+        <div class="moon-wrap" style="margin-top:22px">
+          <svg class="moon-svg" viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="moon-body" cx="72" cy="56" r="30" opacity=".5"/>
+            <circle class="moon-hole" cx="88" cy="48" r="28"/>
+            <path class="rope" d="M14 112C38 112 46 92 70 92s32 20 56 20" stroke-opacity=".45"/>
+            <circle cx="70" cy="92" r="7" fill="none" stroke="#C2402F" stroke-width="2" stroke-opacity=".45"/>
+            <path d="M63 92l-12 9M77 92l12 9" fill="none" stroke="#C2402F" stroke-width="2" stroke-linecap="round" stroke-opacity=".45"/>
+          </svg>
+        </div>
+        <p class="tagline" style="margin:2px auto 0;text-align:center">留个联系方式，看看谁在等你</p>
+        <div class="state-bar warn" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span>资料审核中，通过后自动进入匹配池</span><span class="audit wait">待审核</span></div>
+        <div class="count-line" style="margin-top:12px"><span>今日剩余获取次数</span><span><b>0</b> 次</span></div>
+        <div class="cta" style="margin-top:18px">
+          <button class="btn primary">查看我的资料</button>
+          <button class="btn off">获取一个联系方式</button>
+          <div class="hint">审核通过后才可获取他人联系方式</div>
+        </div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ③ 已登记 -->
+    <div class="frame">
+      <div class="frame-title">P-01 ③ 已登记</div>
+      <div class="phone">
+        <div class="hdr">
+          <div><div class="brand">月老办事处</div><div class="brand-sub">MOONMATCH</div></div>
+          <div class="corner">
+            <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/><path d="M9 12.5h6M9 16h4"/></svg></div>
+          </div>
+        </div>
+        <div class="moon-wrap" style="margin-top:22px">
+          <svg class="moon-svg" viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="moon-body" cx="72" cy="56" r="30"/>
+            <circle class="moon-hole" cx="88" cy="48" r="28"/>
+            <path class="rope" d="M14 112C38 112 46 92 70 92s32 20 56 20"/>
+            <circle cx="70" cy="92" r="7" fill="none" stroke="#C2402F" stroke-width="2"/>
+            <path d="M63 92l-12 9M77 92l12 9" fill="none" stroke="#C2402F" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="tagline" style="margin:2px auto 0;text-align:center">留个联系方式，看看谁在等你</p>
+        <div class="state-bar ok" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span>已登记 · 已进入匹配池</span><span class="audit pass">已通过</span></div>
+        <div class="count-line" style="margin-top:12px"><span>今日剩余获取次数</span><span><b>5</b> 次</span></div>
+        <div class="cta" style="margin-top:18px">
+          <button class="btn ghost">我的资料</button>
+          <button class="btn primary">获取一个联系方式</button>
+          <div class="hint" style="color:var(--ink-soft)">今日已获取 0 次 · 每日 24:00 重置</div>
+        </div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ④ 已驳回 -->
+    <div class="frame">
+      <div class="frame-title">P-01 ④ 已驳回</div>
+      <div class="phone">
+        <div class="hdr">
+          <div><div class="brand">月老办事处</div><div class="brand-sub">MOONMATCH</div></div>
+          <div class="corner">
+            <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/><path d="M9 12.5h6M9 16h4"/></svg></div>
+          </div>
+        </div>
+        <div class="moon-wrap" style="margin-top:20px">
+          <svg class="moon-svg" viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="moon-body" cx="72" cy="56" r="30" opacity=".45"/>
+            <circle class="moon-hole" cx="88" cy="48" r="28"/>
+            <path class="rope" d="M14 112C38 112 46 92 70 92s32 20 56 20" stroke-opacity=".4"/>
+          </svg>
+        </div>
+        <p class="tagline" style="margin:2px auto 0;text-align:center">留个联系方式，看看谁在等你</p>
+        <div class="state-bar warn" style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span>资料未通过审核，修改后可重新提交</span><span class="audit reject">已驳回</span></div>
+        <div class="card" style="margin-top:10px;border-color:rgba(201,138,46,.45);background:rgba(201,138,46,.08)">
+          <div class="lab" style="color:#8F6220">驳回原因</div>
+          <div style="font-size:12px;line-height:1.7;color:#8F6220;margin-top:5px">联系方式格式不正确，请核对后重新提交</div>
+        </div>
+        <div class="cta" style="margin-top:16px">
+          <button class="btn primary">修改重提</button>
+          <button class="btn off">获取一个联系方式</button>
+          <div class="hint">审核通过后才可获取他人联系方式</div>
+        </div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= P-02 登记 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>P-02 登记（半屏表单 · 3 态）</h2>
+  <div class="grid">
+
+    <!-- ① 空表单 -->
+    <div class="frame">
+      <div class="frame-title">P-02 ① 空表单</div>
+      <div class="phone sheet-phone">
+        <div class="bg-page">
+          <div class="hdr"><div><div class="brand">月老办事处</div><div class="brand-sub">MOONMATCH</div></div>
+            <div class="corner"><div class="icon-btn"></div></div></div>
+          <p class="tagline" style="margin-top:26px;text-align:center;max-width:none">留个联系方式，看看谁在等你</p>
+          <div class="cta" style="margin-top:40px">
+            <button class="btn primary">登记我的资料</button>
+            <button class="btn off">获取一个联系方式</button>
+          </div>
+        </div>
+        <div class="dim rel"><span class="num" style="left:12px;top:12px">8</span></div>
+        <div class="sheet">
+          <div class="sheet-title">登记我的资料</div>
+          <div class="sheet-sub rel"><span class="num" style="left:-8px;top:-8px">1</span>填写 3 项，10 秒完成；联系方式仅在你主动解锁后才可复制</div>
+
+          <div class="field rel"><span class="num" style="left:-8px;top:-8px">2</span>
+            <span class="lab">性别</span>
+            <div class="pills"><span class="pill">男</span><span class="pill">女</span></div>
+          </div>
+
+          <div class="field rel"><span class="num" style="left:-8px;top:-8px">3</span>
+            <span class="lab">年龄</span>
+            <div class="input ph">18 – 60</div>
+          </div>
+
+          <div class="field rel"><span class="num" style="left:-8px;top:-8px">4</span>
+            <span class="lab">联系方式</span>
+            <div class="seg"><span class="seg-item on">手机号</span><span class="seg-item">抖音号</span></div>
+            <div class="input ph">请输入手机号
+              <span class="num" style="left:-8px;top:-8px">5</span></div>
+          </div>
+
+          <div class="agree rel"><span class="num" style="left:-8px;top:-8px">6</span>
+            <span class="cbox"></span>
+            <span>我已阅读并同意<a>《用户协议》</a><a>《隐私政策》</a></span>
+          </div>
+          <button class="btn off" disabled>提交</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 已填写 -->
+    <div class="frame">
+      <div class="frame-title">P-02 ② 已填写</div>
+      <div class="phone sheet-phone">
+        <div class="bg-page">
+          <div class="hdr"><div><div class="brand">月老办事处</div><div class="brand-sub">MOONMATCH</div></div>
+            <div class="corner"><div class="icon-btn"></div></div></div>
+          <p class="tagline" style="margin-top:26px;text-align:center;max-width:none">留个联系方式，看看谁在等你</p>
+          <div class="cta" style="margin-top:40px">
+            <button class="btn primary">登记我的资料</button>
+            <button class="btn off">获取一个联系方式</button>
+          </div>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="sheet-title">登记我的资料</div>
+          <div class="sheet-sub">填写 3 项，10 秒完成；联系方式仅在你主动解锁后才可复制</div>
+
+          <div class="field">
+            <span class="lab">性别</span>
+            <div class="pills"><span class="pill">男</span><span class="pill on">女</span></div>
+          </div>
+
+          <div class="field">
+            <span class="lab">年龄</span>
+            <div class="input">24</div>
+          </div>
+
+          <div class="field">
+            <span class="lab">联系方式</span>
+            <div class="seg"><span class="seg-item on">手机号</span><span class="seg-item">抖音号</span></div>
+            <div class="input"><span class="mask" style="font-size:14px;color:var(--ink)">138****8888</span></div>
+            <div class="lab" style="margin-top:7px;color:var(--lock)">输入过程与回显均为掩码，明文不进入视图层</div>
+          </div>
+
+          <div class="agree">
+            <span class="cbox on">✓</span>
+            <span>我已阅读并同意<a>《用户协议》</a><a>《隐私政策》</a></span>
+          </div>
+          <button class="btn primary">提交</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 提交中 -->
+    <div class="frame">
+      <div class="frame-title">P-02 ③ 提交中</div>
+      <div class="phone sheet-phone">
+        <div class="bg-page">
+          <div class="hdr"><div><div class="brand">月老办事处</div><div class="brand-sub">MOONMATCH</div></div>
+            <div class="corner"><div class="icon-btn"></div></div></div>
+          <p class="tagline" style="margin-top:26px;text-align:center;max-width:none">留个联系方式，看看谁在等你</p>
+          <div class="cta" style="margin-top:40px">
+            <button class="btn primary">登记我的资料</button>
+            <button class="btn off">获取一个联系方式</button>
+          </div>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet" style="opacity:.96">
+          <div class="sheet-title">登记我的资料</div>
+          <div class="sheet-sub">填写 3 项，10 秒完成；联系方式仅在你主动解锁后才可复制</div>
+
+          <div class="field">
+            <span class="lab">性别</span>
+            <div class="pills"><span class="pill on" style="opacity:.55">女</span><span class="pill" style="opacity:.55">男</span></div>
+          </div>
+
+          <div class="field">
+            <span class="lab">年龄</span>
+            <div class="input dimmed">24</div>
+          </div>
+
+          <div class="field">
+            <span class="lab">联系方式</span>
+            <div class="seg" style="opacity:.55"><span class="seg-item on">手机号</span><span class="seg-item">抖音号</span></div>
+            <div class="input dimmed"><span class="mask" style="font-size:14px;color:var(--lock)">138****8888</span></div>
+          </div>
+
+          <div class="agree" style="opacity:.6">
+            <span class="cbox on">✓</span>
+            <span>我已阅读并同意<a>《用户协议》</a><a>《隐私政策》</a></span>
+          </div>
+          <button class="btn primary" disabled><span class="btn-loading"><span class="spinner sm on-dark"></span>提交中…</span></button>
+          <div class="lab" style="text-align:center;margin-top:9px;color:var(--lock)">提交期间按钮锁定，不可重复提交</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= P-03 我的档案 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>P-03 我的档案</h2>
+  <div class="grid">
+
+    <!-- ① 待审核 -->
+    <div class="frame">
+      <div class="frame-title">P-03 ① 待审核</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">我的档案</div>
+          <div class="corner"><div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/></svg></div></div></div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="hdr" style="align-items:center">
+            <div><div class="lab">档案</div><div class="mc-title" style="margin-top:4px">女 · 24 岁</div></div>
+            <span class="audit wait">待审核</span>
+          </div>
+          <div class="divider"></div>
+          <div class="lab">联系方式（掩码）</div>
+          <div class="contact locked" style="margin-top:8px">
+            <span class="mask">138****8888</span>
+            <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+          </div>
+        </div>
+
+        <div class="state-bar warn" style="margin-top:12px">机审队列处理中，通常 1 分钟内出结果；审核期间不进入匹配池</div>
+
+        <div class="cta" style="margin-top:16px;flex-direction:row;gap:10px">
+          <button class="btn sm ghost">编辑</button>
+          <button class="btn sm ghost">下架</button>
+        </div>
+
+        <div class="lab" style="margin-top:14px;line-height:1.7">变更联系方式需重新审核，审核期间暂时离开匹配池</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ② 已登记 -->
+    <div class="frame">
+      <div class="frame-title">P-03 ② 已登记</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">我的档案</div>
+          <div class="corner"><div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/></svg></div></div></div>
+
+        <div class="card rel" style="margin-top:18px">
+          <span class="num" style="left:-6px;top:-6px">2</span>
+          <span class="num" style="right:56px;top:-6px">3</span>
+          <div class="hdr" style="align-items:center">
+            <div><div class="lab">档案</div><div class="mc-title" style="margin-top:4px">女 · 24 岁</div></div>
+            <span class="audit pass">已通过</span>
+          </div>
+          <div class="divider"></div>
+          <div class="lab rel"><span class="num" style="left:-6px;top:-6px">4</span>联系方式（掩码）</div>
+          <div class="contact unlocked" style="margin-top:8px">
+            <span class="mask">138****8888</span>
+            <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3F7A5A" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 6.4-2"/></svg></span>
+          </div>
+        </div>
+
+        <div class="state-bar ok" style="margin-top:12px">已进入匹配池 · 今日被获取 0 次</div>
+
+        <div class="cta" style="margin-top:16px;flex-direction:row;gap:10px">
+          <button class="btn sm primary">编辑</button>
+          <button class="btn sm ghost">下架</button>
+        </div>
+
+        <div class="lab" style="margin-top:14px;line-height:1.7">变更联系方式需重新审核，审核期间暂时离开匹配池</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ③ 已驳回 -->
+    <div class="frame">
+      <div class="frame-title">P-03 ③ 已驳回</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">我的档案</div>
+          <div class="corner"><div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/></svg></div></div></div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="hdr" style="align-items:center">
+            <div><div class="lab">档案</div><div class="mc-title" style="margin-top:4px">女 · 24 岁</div></div>
+            <span class="audit reject">已驳回</span>
+          </div>
+          <div class="divider"></div>
+          <div class="lab">联系方式（掩码）</div>
+          <div class="contact dead" style="margin-top:8px">
+            <span class="mask">138****8888</span>
+            <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+          </div>
+        </div>
+
+        <div class="card rel" style="margin-top:12px;border-color:rgba(201,138,46,.45);background:rgba(201,138,46,.09)">
+          <span class="num" style="left:-6px;top:-6px">5</span>
+          <div class="lab" style="color:#8F6220">驳回原因</div>
+          <div style="font-size:12px;line-height:1.7;color:#8F6220;margin-top:5px">联系方式格式不正确，请核对后重新提交</div>
+        </div>
+
+        <div class="cta" style="margin-top:16px;flex-direction:row;gap:10px">
+          <button class="btn sm primary">修改重提</button>
+          <button class="btn sm ghost">下架</button>
+        </div>
+
+        <div class="lab" style="margin-top:14px;line-height:1.7">修改后重新进入机审队列，审核期间不进入匹配池</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ④ 已下架 -->
+    <div class="frame">
+      <div class="frame-title">P-03 ④ 已下架</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">我的档案</div>
+          <div class="corner"><div class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C2402F" stroke-width="1.6"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M13.5 3.8V8h4"/></svg></div></div></div>
+
+        <div class="card" style="margin-top:18px;background:#F4ECE4;border-style:dashed;border-color:rgba(185,175,166,.72)">
+          <div class="hdr" style="align-items:center">
+            <div><div class="lab">档案</div><div class="mc-title" style="margin-top:4px;color:#7A7069">女 · 24 岁</div></div>
+            <span class="audit off">已下架</span>
+          </div>
+          <div class="divider"></div>
+          <div class="lab">联系方式（掩码）</div>
+          <div class="contact dead" style="margin-top:8px">
+            <span class="mask">138****8888</span>
+            <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+          </div>
+        </div>
+
+        <div class="state-bar off" style="margin-top:12px">档案已下架，不再展示给其他用户，也不占用匹配池</div>
+
+        <div class="cta" style="margin-top:16px;flex-direction:row;gap:10px">
+          <button class="btn sm primary">重新上架</button>
+          <button class="btn sm ghost">编辑</button>
+        </div>
+
+        <div class="lab" style="margin-top:14px;line-height:1.7">重新上架需重新通过机审；变更联系方式同样需重新审核</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= P-04 获取结果卡 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>P-04 获取结果卡（核心转化页）</h2>
+  <div class="grid">
+
+    <!-- ① 待匹配 IDLE -->
+    <div class="frame">
+      <div class="frame-title">P-04 ① 待匹配（IDLE）</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">获取一个联系方式</div>
+          <div class="corner"><span style="font-size:12px;color:var(--red-deep)">我获取过的</span></div></div>
+
+        <div class="moon-wrap" style="margin-top:44px">
+          <svg class="moon-svg" viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="moon-body" cx="72" cy="56" r="30"/>
+            <circle class="moon-hole" cx="88" cy="48" r="28"/>
+            <path class="rope" d="M14 112C38 112 46 92 70 92s32 20 56 20"/>
+            <circle cx="70" cy="92" r="7" fill="none" stroke="#C2402F" stroke-width="2"/>
+            <path d="M63 92l-12 9M77 92l12 9" fill="none" stroke="#C2402F" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="cta" style="margin-top:34px">
+          <button class="btn primary lg">获取一个联系方式</button>
+        </div>
+
+        <div class="count-line" style="margin-top:18px"><span>今日剩余获取次数</span><span><b>5</b> 次</span></div>
+        <div class="mc-note" style="text-align:left;margin-top:8px">随机匹配 1 份你未获取过的资料，年龄相近优先；出卡免费，解锁需完整观看 1 条激励视频</div>
+
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ② 匹配中 -->
+    <div class="frame">
+      <div class="frame-title">P-04 ② 匹配中</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">获取一个联系方式</div>
+          <div class="corner"></div></div>
+
+        <div class="card" style="margin-top:26px;min-height:220px">
+          <div class="spinner" style="margin-top:34px"></div>
+          <div class="finding" style="color:var(--red-deep)">正在为你寻找…</div>
+          <span class="skel" style="width:52%;height:20px;margin:26px auto 14px"></span>
+          <span class="skel" style="width:74%;margin:0 auto 10px"></span>
+          <span class="skel" style="width:40%;margin:0 auto"></span>
+        </div>
+
+        <div class="lab" style="text-align:center;margin-top:14px">匹配为单次索引查询，通常 500ms 内出卡</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ③ 池子空 EMPTY -->
+    <div class="frame">
+      <div class="frame-title">P-04 ③ 池子空（EMPTY）</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">获取一个联系方式</div>
+          <div class="corner"></div></div>
+
+        <div class="card on-paper2" style="margin-top:26px;padding:26px 16px 22px">
+          <div class="empty">
+            <svg class="moon-svg" style="width:104px;height:104px" viewBox="0 0 140 140" aria-hidden="true">
+              <circle class="moon-body" cx="72" cy="56" r="30" opacity=".55"/>
+              <circle class="moon-hole" cx="88" cy="48" r="28"/>
+              <path class="rope" d="M14 112C38 112 46 92 70 92s32 20 56 20" stroke-opacity=".6"/>
+              <circle cx="70" cy="92" r="7" fill="none" stroke="#C2402F" stroke-width="2" stroke-opacity=".6"/>
+              <path d="M63 92l-12 9M77 92l12 9" fill="none" stroke="#C2402F" stroke-width="2" stroke-linecap="round" stroke-opacity=".6"/>
+            </svg>
+            <div class="empty-txt">今日可获取的资料已取完，明天再来</div>
+          </div>
+        </div>
+
+        <div class="cta" style="margin-top:20px">
+          <button class="btn ghost">返回首页</button>
+        </div>
+        <div class="lab" style="text-align:center;margin-top:12px">池子每日 24:00 重置，届时可重新获取</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ④ 卡片锁定态 -->
+    <div class="frame">
+      <div class="frame-title">P-04 ④ 卡片锁定态</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">获取一个联系方式</div>
+          <div class="corner"></div></div>
+
+        <div class="mc rel" style="margin-top:18px">
+          <span class="num" style="left:-6px;top:-6px">1</span>
+          <span class="num" style="right:-6px;top:-6px">4</span>
+          <div class="mc-head">
+            <div class="mc-title">女 <small>· 24 岁</small></div>
+            <span class="audit wait">待解锁</span>
+          </div>
+          <div class="mc-line"><span class="mc-sub">资料未解锁，联系方式不可见</span></div>
+
+          <div class="mc-body rel">
+            <span class="num" style="left:-6px;top:-6px">2</span>
+            <div class="lab">联系方式（掩码）</div>
+            <div class="contact locked" style="margin-top:8px">
+              <span class="mask">138****8888</span>
+              <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+            </div>
+          </div>
+
+          <span class="num" style="left:-6px;top:200px">3</span>
+          <button class="btn primary">看广告解锁</button>
+        </div>
+
+        <div class="link-row rel">
+          <span class="num" style="left:-6px;top:-2px">5</span>
+          <span class="lk">举报</span>
+          <span class="lk accent">我获取过的 ›</span>
+        </div>
+
+        <div class="count-line rel" style="margin-top:12px"><span>今日剩余获取次数</span><span><b>5</b> 次
+          <span class="num" style="right:-6px;top:-6px">7</span></span></div>
+
+        <div class="lab rel" style="margin-top:10px;line-height:1.7"><span class="num" style="left:-6px;top:-6px">8</span>解锁后仅可复制，请勿用于骚扰或营销</div>
+        <div class="disclaimer rel"><span class="num" style="left:-6px;top:-4px">9</span>本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ⑤ 已解锁态 -->
+    <div class="frame">
+      <div class="frame-title">P-04 ⑤ 已解锁态</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">获取一个联系方式</div>
+          <div class="corner"></div></div>
+
+        <div class="mc" style="margin-top:18px;border-color:rgba(63,122,90,.42);background:rgba(63,122,90,.05)">
+          <div class="mc-head">
+            <div class="mc-title">女 <small>· 24 岁</small></div>
+            <span class="audit pass">已解锁</span>
+          </div>
+          <div class="mc-line"><span class="mc-sub">已解锁 · 30 天内可重复复制，不消耗次数</span></div>
+
+          <div class="mc-body">
+            <div class="lab">联系方式（掩码）</div>
+            <div class="contact unlocked" style="margin-top:8px">
+              <span class="mask">138****8888</span>
+              <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3F7A5A" stroke-width="1.7"><path d="M8 11.5V8a4 4 0 0 1 8 0"/><rect x="5" y="11" width="14" height="9.5" rx="2.4"/></svg></span>
+            </div>
+          </div>
+
+          <button class="btn ok">复制联系方式</button>
+        </div>
+
+        <div class="ok-bar">已解锁 · 明文不进入视图层，点击复制直接写入剪贴板</div>
+        <div class="compliance">解锁后仅可复制，请勿用于骚扰或营销</div>
+
+        <div class="link-row"><span class="lk">举报</span><span class="lk accent">我获取过的 ›</span></div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ⑥ 已失效态 -->
+    <div class="frame">
+      <div class="frame-title">P-04 ⑥ 已失效态</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">获取一个联系方式</div>
+          <div class="corner"></div></div>
+
+        <div class="mc dead" style="margin-top:18px">
+          <div class="mc-head">
+            <div class="mc-title">女 <small>· 24 岁</small></div>
+            <span class="audit off">已失效</span>
+          </div>
+          <div class="mc-line"><span class="mc-sub">该档案已下架，解锁记录同步失效</span></div>
+
+          <div class="mc-body">
+            <div class="lab">联系方式（掩码）</div>
+            <div class="contact dead" style="margin-top:8px">
+              <span class="mask">138****8888</span>
+              <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><path d="M7 7l10 10M17 7 7 17"/></svg></span>
+            </div>
+          </div>
+
+          <div class="warn-bar">该资料已下线</div>
+          <button class="btn off" disabled>复制联系方式</button>
+        </div>
+
+        <div class="link-row"><span class="lk">举报</span><span class="lk accent">我获取过的 ›</span></div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ⑦ 达每日上限（简版） -->
+    <div class="frame">
+      <div class="frame-title">P-04 ⑦ 达每日上限（简版 · 按钮置灰）</div>
+      <div class="phone compact">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">获取一个联系方式</div>
+          <div class="corner"></div></div>
+
+        <div class="mc" style="margin-top:18px">
+          <div class="mc-head">
+            <div class="mc-title">女 <small>· 24 岁</small></div>
+            <span class="audit wait">待解锁</span>
+          </div>
+          <div class="mc-body">
+            <div class="lab">联系方式（掩码）</div>
+            <div class="contact locked" style="margin-top:8px">
+              <span class="mask">138****8888</span>
+              <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+            </div>
+          </div>
+          <button class="btn off" disabled>看广告解锁</button>
+        </div>
+
+        <div class="warn-bar">今日获取次数已用完，明天再来</div>
+        <div class="lab" style="text-align:center;margin-top:10px">每日 20 次，24:00 自然日重置（以服务端记账为准）</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= P-05 解锁记录 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>P-05 解锁记录</h2>
+  <div class="grid">
+
+    <!-- ① 有记录 -->
+    <div class="frame">
+      <div class="frame-title">P-05 ① 有记录</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">解锁记录</div>
+          <div class="corner"></div></div>
+
+        <div class="quota rel"><span>今日剩余获取次数</span><span><b>3</b> 次 · 24:00 重置</span>
+          <span class="num" style="left:-6px;top:-6px">1</span></div>
+
+        <div class="rec rel">
+          <span class="num" style="left:-6px;top:-6px">2</span>
+          <div>
+            <div class="rec-title">女 · 24 岁</div>
+            <div class="rec-time">10-17 14:22 解锁</div>
+            <div class="rec-tags"><span class="chip ok">30 天免重复消耗</span></div>
+          </div>
+          <div class="rec-r">
+            <span class="mask">138****8888</span>
+            <button class="btn tiny ghost">复制</button>
+          </div>
+        </div>
+
+        <div class="rec">
+          <div>
+            <div class="rec-title">男 · 27 岁</div>
+            <div class="rec-time">10-16 21:05 解锁</div>
+            <div class="rec-tags"><span class="chip warn">该资料已下线</span></div>
+          </div>
+          <div class="rec-r">
+            <span class="mask">138****8888</span>
+            <button class="btn tiny off" disabled>复制</button>
+          </div>
+        </div>
+
+        <div class="rec">
+          <div>
+            <div class="rec-title">男 · 31 岁</div>
+            <div class="rec-time">10-15 09:48 解锁</div>
+            <div class="rec-tags"><span class="chip ok">30 天免重复消耗</span></div>
+          </div>
+          <div class="rec-r">
+            <span class="mask" style="font-size:14px">dy_****</span>
+            <button class="btn tiny ghost">复制</button>
+          </div>
+        </div>
+
+        <div class="lab" style="margin-top:14px;line-height:1.7">记录仅保留掩码；点击复制可再次写入剪贴板，不消耗次数</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ② 空态 -->
+    <div class="frame">
+      <div class="frame-title">P-05 ② 空态</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">解锁记录</div>
+          <div class="corner"></div></div>
+
+        <div class="card on-paper2" style="margin-top:40px;padding:30px 16px 26px">
+          <div class="empty">
+            <svg class="moon-svg" style="width:100px;height:100px" viewBox="0 0 140 140" aria-hidden="true">
+              <circle class="moon-body" cx="72" cy="56" r="30" opacity=".5"/>
+              <circle class="moon-hole" cx="88" cy="48" r="28"/>
+              <path class="rope" d="M14 112C38 112 46 92 70 92s32 20 56 20" stroke-opacity=".55"/>
+              <circle cx="70" cy="92" r="7" fill="none" stroke="#C2402F" stroke-width="2" stroke-opacity=".55"/>
+            </svg>
+            <div class="empty-txt">还没有解锁记录<br>去「获取一个联系方式」看看谁在等你</div>
+          </div>
+        </div>
+
+        <div class="cta" style="margin-top:22px">
+          <button class="btn primary">获取一个联系方式</button>
+        </div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= P-06 举报与反馈 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>P-06 举报与反馈</h2>
+  <div class="grid">
+
+    <!-- ① 未提交 -->
+    <div class="frame">
+      <div class="frame-title">P-06 ① 未提交</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">举报与反馈</div>
+          <div class="corner"></div></div>
+
+        <div class="card rel" style="margin-top:18px">
+          <span class="num" style="left:-6px;top:6px">2</span>
+          <div class="lab">举报类型（单选）</div>
+          <div class="radio-list" style="margin-top:10px">
+            <div class="radio on"><span class="dot"></span>虚假信息</div>
+            <div class="radio"><span class="dot"></span>骚扰</div>
+            <div class="radio"><span class="dot"></span>其他</div>
+          </div>
+
+          <div class="lab" style="display:block;margin-top:16px">补充说明（选填）</div>
+          <div class="textarea ph" style="margin-top:8px;position:relative">可补充具体情况，便于我们核实处理
+            <span class="num" style="right:-6px;top:-8px">3</span></div>
+        </div>
+
+        <div class="cta rel" style="margin-top:18px">
+          <span class="num" style="left:-6px;top:-4px">4</span>
+          <button class="btn primary">提交</button>
+        </div>
+
+        <div class="lab" style="margin-top:12px;line-height:1.7">举报将被严格保密，不会向被举报对象展示你的身份</div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+    <!-- ② 已提交 -->
+    <div class="frame">
+      <div class="frame-title">P-06 ② 已提交</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">举报与反馈</div>
+          <div class="corner"></div></div>
+
+        <div class="card" style="margin-top:34px">
+          <div class="success">
+            <div class="ok-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3F7A5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg></div>
+            <div class="success-title">举报已提交</div>
+            <div class="success-sub">感谢你的反馈，我们会尽快核实；核实成立的档案将被隐藏或封禁</div>
+          </div>
+        </div>
+
+        <div class="cta" style="margin-top:20px">
+          <button class="btn ghost">返回</button>
+        </div>
+        <div class="disclaimer">本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= P-07 协议与隐私 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>P-07 协议与隐私</h2>
+  <div class="grid">
+
+    <div class="frame">
+      <div class="frame-title">P-07 ① 静态页</div>
+      <div class="phone">
+        <div class="hdr"><span class="back">‹ 返回</span><div class="page-title">协议与隐私</div>
+          <div class="corner"></div></div>
+
+        <svg class="lattice" width="76" height="16" viewBox="0 0 76 16" aria-hidden="true">
+          <g fill="none" stroke="#C2402F" stroke-opacity=".28" stroke-width="1">
+            <path d="M0 8h22M54 8h22"/><rect x="28" y="2" width="5" height="5"/>
+            <rect x="28" y="9" width="5" height="5"/><rect x="35" y="2" width="5" height="5"/>
+            <rect x="35" y="9" width="5" height="5"/>
+          </g>
+        </svg>
+
+        <div class="card rel" style="margin-top:6px;padding:4px 16px">
+          <span class="num" style="left:-6px;top:10px">2</span>
+          <div class="legal-row">用户协议<span class="arrow">›</span></div>
+          <div class="legal-row">隐私政策<span class="arrow">›</span></div>
+
+          <div class="collect rel">
+            <span class="num" style="left:-6px;top:-6px">4</span>
+            <div class="collect-title">个人信息收集清单</div>
+            <ul>
+              <li><b>收集：</b>性别、年龄、联系方式</li>
+              <li><b>用途：</b>小程序内展示与匹配</li>
+              <li><b>不采集：</b>通讯录、定位</li>
+            </ul>
+          </div>
+
+          <div class="legal-row rel" style="margin-top:4px"><span class="num" style="left:-6px;top:12px">5</span>可见性说明<span class="arrow">›</span></div>
+          <div class="legal-row deep rel"><span class="num" style="left:-6px;top:12px">6</span>注销账号<span class="arrow">›</span></div>
+        </div>
+
+        <div class="lab" style="margin-top:12px;line-height:1.7">档案仅以「性别 · 年龄 + 掩码联系方式」形式展示；完整联系方式仅在你主动解锁后可复制，明文不进入视图层</div>
+        <div class="disclaimer rel"><span class="num" style="left:-6px;top:-4px">7</span>本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= 组件专区 ================= -->
+<section class="sec">
+  <h2 class="sec-title"><i></i>组件专区</h2>
+
+  <!-- unlock-popup -->
+  <div class="sub-title">unlock-popup · 5 态</div>
+  <div class="grid">
+
+    <!-- ① 解锁须知 -->
+    <div class="frame">
+      <div class="frame-title">unlock-popup ① 解锁须知</div>
+      <div class="phone pop-phone">
+        <div class="pop-bg">
+          <div class="mc" style="margin-top:20px">
+            <div class="mc-head"><div class="mc-title">女 <small>· 24 岁</small></div></div>
+            <div class="contact locked" style="margin-top:14px"><span class="mask">138****8888</span></div>
+            <button class="btn primary" style="margin-top:14px">看广告解锁</button>
+          </div>
+        </div>
+        <div class="pop-dim"></div>
+        <div class="popup">
+          <div class="pop-step"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+          <div class="pop-title">解锁须知</div>
+          <div class="pop-txt">完整观看 1 条激励视频，即可解锁对方联系方式</div>
+          <div class="pop-media"><span class="ph-txt">激励视频广告位（平台素材）</span></div>
+          <div class="lab" style="margin-top:10px">可随时关闭播放；未完整观看不发放、不扣次数</div>
+          <button class="btn primary">看广告解锁</button>
+          <button class="btn ghost" style="margin-top:8px">暂不解锁</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 广告加载中 -->
+    <div class="frame">
+      <div class="frame-title">unlock-popup ② 广告加载中</div>
+      <div class="phone pop-phone">
+        <div class="pop-bg">
+          <div class="mc" style="margin-top:20px">
+            <div class="mc-head"><div class="mc-title">女 <small>· 24 岁</small></div></div>
+            <div class="contact locked" style="margin-top:14px"><span class="mask">138****8888</span></div>
+            <button class="btn primary" style="margin-top:14px">看广告解锁</button>
+          </div>
+        </div>
+        <div class="pop-dim"></div>
+        <div class="popup">
+          <div class="pop-step"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+          <div class="pop-title">广告加载中</div>
+          <div class="spinner" style="margin:18px auto 4px"></div>
+          <div class="pop-txt">正在拉取激励视频素材，请稍候…</div>
+          <div class="lab" style="margin-top:10px">超过 5s 未进入播放将提示重试</div>
+          <button class="btn off" disabled>加载中…</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 播放中 -->
+    <div class="frame">
+      <div class="frame-title">unlock-popup ③ 播放中</div>
+      <div class="phone pop-phone">
+        <div class="pop-bg">
+          <div class="mc" style="margin-top:20px">
+            <div class="mc-head"><div class="mc-title">女 <small>· 24 岁</small></div></div>
+            <div class="contact locked" style="margin-top:14px"><span class="mask">138****8888</span></div>
+            <button class="btn primary" style="margin-top:14px">看广告解锁</button>
+          </div>
+        </div>
+        <div class="pop-dim"></div>
+        <div class="popup">
+          <div class="pop-step"><i></i><i></i><i class="on"></i><i></i><i></i></div>
+          <div class="pop-title">广告播放中</div>
+          <div class="pop-media">
+            <span class="ph-txt">激励视频播放（平台素材，非档案内容）</span>
+            <div class="pop-close">×</div>
+            <div class="pop-progress"><i></i></div>
+          </div>
+          <div class="pop-txt"><b>看完就能解锁，请勿中途退出</b></div>
+          <div class="lab" style="margin-top:8px">提前关闭不发放、不扣次数，可立即重试（冷却 ≥30s）</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 奖励发放中 -->
+    <div class="frame">
+      <div class="frame-title">unlock-popup ④ 奖励发放中</div>
+      <div class="phone pop-phone">
+        <div class="pop-bg">
+          <div class="mc" style="margin-top:20px">
+            <div class="mc-head"><div class="mc-title">女 <small>· 24 岁</small></div></div>
+            <div class="contact locked" style="margin-top:14px"><span class="mask">138****8888</span></div>
+          </div>
+        </div>
+        <div class="pop-dim"></div>
+        <div class="popup">
+          <div class="pop-step"><i></i><i></i><i></i><i class="on"></i><i></i></div>
+          <div class="pop-title">奖励发放中</div>
+          <div class="spinner" style="margin:18px auto 4px"></div>
+          <div class="pop-txt">正在确认奖励…</div>
+          <div class="lab" style="margin-top:10px">服务端校验播放完成并发放查看券，客户端感知 ≤1s</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 失败 / 达上限 -->
+    <div class="frame">
+      <div class="frame-title">unlock-popup ⑤ 失败 / 达上限</div>
+      <div class="phone pop-phone">
+        <div class="pop-bg">
+          <div class="mc" style="margin-top:20px">
+            <div class="mc-head"><div class="mc-title">女 <small>· 24 岁</small></div></div>
+            <div class="contact locked" style="margin-top:14px"><span class="mask">138****8888</span></div>
+          </div>
+        </div>
+        <div class="pop-dim"></div>
+        <div class="popup">
+          <div class="pop-step"><i></i><i></i><i></i><i></i><i class="on"></i></div>
+          <div class="pop-title">广告加载失败</div>
+          <div class="pop-txt">广告加载失败，请稍后重试</div>
+          <div class="lab" style="margin-top:8px">未发放、不扣次数；连续失败 3 次当日可豁免 1 次</div>
+          <button class="btn primary">重试</button>
+          <div class="warn-bar" style="margin-top:14px">今日获取次数已用完，明天再来</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- match-card -->
+  <div class="sub-title">match-card · 3 态</div>
+  <div class="grid">
+
+    <div class="frame">
+      <div class="frame-title">match-card ① 锁定</div>
+      <div class="phone compact" style="padding-top:34px">
+        <div class="mc">
+          <div class="mc-head">
+            <div class="mc-title">女 <small>· 24 岁</small></div>
+            <span class="audit wait">待解锁</span>
+          </div>
+          <div class="mc-line"><span class="mc-sub">资料未解锁，联系方式不可见</span></div>
+          <div class="contact locked" style="margin-top:14px">
+            <span class="mask">138****8888</span>
+            <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+          </div>
+          <button class="btn primary">看广告解锁</button>
+        </div>
+        <div class="lab" style="margin-top:14px;line-height:1.7">掩码保首尾、中间全掩码；卡片不返回任何联系明文字段</div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="frame-title">match-card ② 已解锁</div>
+      <div class="phone compact" style="padding-top:34px">
+        <div class="mc" style="border-color:rgba(63,122,90,.42);background:rgba(63,122,90,.05)">
+          <div class="mc-head">
+            <div class="mc-title">女 <small>· 24 岁</small></div>
+            <span class="audit pass">已解锁</span>
+          </div>
+          <div class="mc-line"><span class="mc-sub">已解锁 · 30 天内可重复复制，不消耗次数</span></div>
+          <div class="contact unlocked" style="margin-top:14px">
+            <span class="mask">138****8888</span>
+            <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3F7A5A" stroke-width="1.7"><path d="M8 11.5V8a4 4 0 0 1 8 0"/><rect x="5" y="11" width="14" height="9.5" rx="2.4"/></svg></span>
+          </div>
+          <button class="btn ok">复制联系方式</button>
+        </div>
+        <div class="lab" style="margin-top:14px;line-height:1.7">解锁后仍为掩码展示，按钮变为「复制联系方式」</div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="frame-title">match-card ③ 失效</div>
+      <div class="phone compact" style="padding-top:34px">
+        <div class="mc dead">
+          <div class="mc-head">
+            <div class="mc-title">女 <small>· 24 岁</small></div>
+            <span class="audit off">已失效</span>
+          </div>
+          <div class="mc-line"><span class="mc-sub">该档案已下架，解锁记录同步失效</span></div>
+          <div class="contact dead" style="margin-top:14px">
+            <span class="mask">138****8888</span>
+            <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><path d="M7 7l10 10M17 7 7 17"/></svg></span>
+          </div>
+          <div class="warn-bar">该资料已下线</div>
+          <button class="btn off" disabled>复制联系方式</button>
+        </div>
+        <div class="lab" style="margin-top:14px;line-height:1.7">失效态不可复制，券同步作废</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- contact-field -->
+  <div class="sub-title">contact-field · 3 态（明文不进入视图层，复制动作直接写入剪贴板）</div>
+  <div class="grid">
+
+    <div class="frame">
+      <div class="frame-title">contact-field ① 锁定掩码</div>
+      <div class="phone compact" style="padding-top:34px">
+        <div class="lab">手机号</div>
+        <div class="contact locked" style="margin-top:8px">
+          <span class="mask">138****8888</span>
+          <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+        </div>
+        <div class="divider"></div>
+        <div class="lab">抖音号</div>
+        <div class="contact locked" style="margin-top:8px">
+          <span class="mask" style="font-size:14px">dy_****</span>
+          <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+        </div>
+        <div class="lab" style="margin-top:16px;line-height:1.7">未解锁不暴露任何有效信息；不出现完整位数、不可比对</div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="frame-title">contact-field ② 已解锁掩码 + 复制</div>
+      <div class="phone compact" style="padding-top:34px">
+        <div class="lab">手机号</div>
+        <div class="contact unlocked" style="margin-top:8px">
+          <span class="mask">138****8888</span>
+          <button class="btn tiny ok inline">复制</button>
+        </div>
+        <div class="divider"></div>
+        <div class="lab">抖音号</div>
+        <div class="contact unlocked" style="margin-top:8px">
+          <span class="mask" style="font-size:14px">dy_****</span>
+          <button class="btn tiny ok inline">复制</button>
+        </div>
+        <div class="ok-bar">已复制，请合规使用</div>
+        <div class="lab" style="margin-top:12px;line-height:1.7">明文不进入视图层，复制动作直接写入剪贴板；不落本地存储</div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="frame-title">contact-field ③ 失效</div>
+      <div class="phone compact" style="padding-top:34px">
+        <div class="lab">手机号</div>
+        <div class="contact dead" style="margin-top:8px">
+          <span class="mask">138****8888</span>
+          <span class="lock-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B9AFA6" stroke-width="1.7"><path d="M7 7l10 10M17 7 7 17"/></svg></span>
+        </div>
+        <div class="divider"></div>
+        <div class="lab">抖音号</div>
+        <div class="contact dead" style="margin-top:8px">
+          <span class="mask" style="font-size:14px">dy_****</span>
+          <button class="btn tiny off" disabled>复制</button>
+        </div>
+        <div class="warn-bar">该资料已下线</div>
+        <div class="lab" style="margin-top:12px;line-height:1.7">档案下架或封禁后同步失效，不可复制</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- audit-badge -->
+  <div class="sub-title">audit-badge · 4 态</div>
+  <div class="grid">
+
+    <div class="frame">
+      <div class="frame-title">audit-badge ① 待审核</div>
+      <div class="phone compact" style="padding-top:44px">
+        <div style="display:flex;justify-content:center"><span class="audit wait" style="font-size:13px;padding:6px 16px">待审核</span></div>
+        <div class="lab" style="margin-top:20px;line-height:1.7">色：--gold 基调；用于机审队列处理中与人工复核中</div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="frame-title">audit-badge ② 已通过</div>
+      <div class="phone compact" style="padding-top:44px">
+        <div style="display:flex;justify-content:center"><span class="audit pass" style="font-size:13px;padding:6px 16px">已通过</span></div>
+        <div class="lab" style="margin-top:20px;line-height:1.7">色：--ok；用于已登记、已进入匹配池、已解锁</div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="frame-title">audit-badge ③ 已驳回</div>
+      <div class="phone compact" style="padding-top:44px">
+        <div style="display:flex;justify-content:center"><span class="audit reject" style="font-size:13px;padding:6px 16px">已驳回</span></div>
+        <div class="lab" style="margin-top:20px;line-height:1.7">色：--warn；必须同时给出驳回原因与「修改重提」入口</div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="frame-title">audit-badge ④ 已下架</div>
+      <div class="phone compact" style="padding-top:44px">
+        <div style="display:flex;justify-content:center"><span class="audit off" style="font-size:13px;padding:6px 16px">已下架</span></div>
+        <div class="lab" style="margin-top:20px;line-height:1.7">色：--lock；用于主动下架与被动隐藏／封禁</div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+</body>
+</html>

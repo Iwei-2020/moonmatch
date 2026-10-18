@@ -1,0 +1,43 @@
+<!-- P-01 首页 · 仅「登记」「获取」两个业务入口 -->
+<view class="mm-page home">
+  <view class="home__hd">
+    <view class="home__brand">
+      <view class="home__name">月老办事处</view>
+      <view class="home__en">MOONMATCH</view>
+    </view>
+    <view class="home__corner" bindtap="goLegal">协议</view>
+  </view>
+
+  <view class="home__lattice"></view>
+
+  <!-- 主视觉：一弯月 + 红绳（纯 CSS 绘制） -->
+  <view class="home__moon-wrap">
+    <view class="home__moon"></view>
+  </view>
+
+  <view class="mm-sub home__tagline">{{tagline}}</view>
+
+  <view class="home__state home__state--{{state}}">
+    <view class="home__state-row">
+      <view class="home__state-text">{{summary}}</view>
+      <audit-badge tt:if="{{state !== 'unregistered'}}" status="{{badgeStatus}}" />
+    </view>
+  </view>
+
+  <view class="home__count">
+    <view class="home__count-label">今日剩余获取次数</view>
+    <view class="home__count-num">{{remain}} 次</view>
+  </view>
+
+  <view class="home__cta">
+    <button class="mm-btn mm-btn--primary home__btn" bindtap="onTapRegister">{{mainBtnText}}</button>
+    <button
+      class="mm-btn {{fetchDisabled ? 'mm-btn--disabled' : 'mm-btn--primary'}} home__btn"
+      bindtap="onTapFetch"
+    >{{fetchBtnText}}</button>
+  </view>
+
+  <view tt:if="{{fetchDisabled}}" class="home__hint">{{fetchTip}}</view>
+
+  <view class="mm-disclaimer home__disclaimer">{{disclaimer}}</view>
+</view>

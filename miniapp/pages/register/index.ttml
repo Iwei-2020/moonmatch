@@ -1,0 +1,70 @@
+<!-- P-02 登记 · 半屏表单（仅 3 个字段） -->
+<view class="mm-page reg">
+  <view class="reg__backdrop"></view>
+
+  <view class="reg__sheet">
+    <view class="reg__title">{{title}}</view>
+    <view class="mm-sub reg__hint">{{hint}}</view>
+
+    <!-- ② 性别（胶囊二选一） -->
+    <view class="reg__label">性别</view>
+    <view class="reg__pills">
+      <view
+        tt:for="{{genderOptions}}"
+        tt:key="value"
+        class="reg__pill {{gender === item.value ? 'reg__pill--on' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onGender"
+      >{{item.label}}</view>
+    </view>
+
+    <!-- ③ 年龄 -->
+    <view class="reg__label">年龄</view>
+    <input
+      class="reg__input"
+      type="number"
+      value="{{age}}"
+      placeholder="18 – 60"
+      bindinput="onAge"
+    />
+
+    <!-- ④ 联系方式类型（分段控件） -->
+    <view class="reg__label">联系方式类型</view>
+    <view class="reg__seg">
+      <view
+        tt:for="{{contactTypeOptions}}"
+        tt:key="value"
+        class="reg__seg-item {{contactType === item.value ? 'reg__seg-item--on' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onContactType"
+      >{{item.label}}</view>
+    </view>
+
+    <!-- ⑤ 联系方式输入（掩码回显） -->
+    <input
+      class="reg__input"
+      value="{{contact}}"
+      placeholder="请输入"
+      bindinput="onContact"
+    />
+    <view class="reg__masked">{{contactMasked}}</view>
+    <view class="reg__tip">输入过程与回显均为掩码，明文不进入视图层</view>
+
+    <!-- ⑥ 协议勾选 -->
+    <checkbox-group class="reg__agree" bindchange="onAgree">
+      <label class="reg__agree-row">
+        <checkbox value="agree" checked="{{agreed}}" />
+        <view class="reg__agree-text">{{agreeText}}</view>
+      </label>
+    </checkbox-group>
+    <view class="reg__link" bindtap="goLegal">查看《用户协议》《隐私政策》</view>
+
+    <!-- ⑦ 提交 -->
+    <button
+      class="mm-btn {{submitting ? 'mm-btn--disabled' : 'mm-btn--primary'}} reg__submit"
+      disabled="{{submitting}}"
+      bindtap="onSubmit"
+    >{{submitting ? submittingText : submitText}}</button>
+    <view tt:if="{{submitting}}" class="reg__tip">提交期间按钮锁定，不可重复提交</view>
+  </view>
+</view>

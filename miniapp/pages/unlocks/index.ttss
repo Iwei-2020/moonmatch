@@ -1,0 +1,135 @@
+/* P-05 解锁记录 · Token 取自线稿说明 §一（色值冻结） */
+.unl {
+  min-height: 100vh;
+}
+
+.unl__hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.unl__back {
+  font-size: 24rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.unl__title {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 32rpx;
+  letter-spacing: 0.1em;
+  color: #3A2B2E;
+}
+
+.unl__spacer {
+  width: 60rpx;
+}
+
+.unl__count {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 18rpx 24rpx;
+  border-radius: 24rpx;
+  background: #FDF1E5;
+  border: 1rpx solid rgba(194, 64, 47, 0.28);
+}
+
+.unl__count-label {
+  font-size: 23rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.unl__count-num {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 28rpx;
+  color: #A32E22;
+}
+
+.unl__moon-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 80rpx 0 32rpx;
+  opacity: 0.55;
+}
+
+.unl__moon {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: #D9A441;
+  position: relative;
+  overflow: hidden;
+}
+
+.unl__moon::after {
+  content: "";
+  position: absolute;
+  left: 38rpx;
+  top: -16rpx;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: #FFF8F0;
+}
+
+.unl__empty-title {
+  text-align: center;
+  font-size: 29rpx;
+  color: #3A2B2E;
+}
+
+.unl__empty-desc {
+  text-align: center;
+  margin: 14rpx 0 40rpx;
+}
+
+.unl__fetch {
+  height: 92rpx;
+  line-height: 92rpx;
+  font-size: 29rpx;
+  border-radius: 999rpx;
+}
+
+.unl__list {
+  margin-top: 28rpx;
+}
+
+.unl__item {
+  margin-bottom: 28rpx;
+}
+
+.unl__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 14rpx;
+  padding: 0 4rpx;
+}
+
+.unl__time {
+  font-size: 22rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.unl__chip {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+}
+
+.unl__chip--ok {
+  color: #3F7A5A;
+  background: rgba(63, 122, 90, 0.1);
+}
+
+.unl__chip--warn {
+  color: #A9631F;
+  background: rgba(201, 138, 46, 0.16);
+}
+
+.unl__disclaimer {
+  margin-top: 40rpx;
+}

@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "audit-badge": "../../components/audit-badge/index"
+  }
+}

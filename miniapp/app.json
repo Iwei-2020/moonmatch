@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/register/index",
+    "pages/profile/index",
+    "pages/fetch/index",
+    "pages/unlocks/index",
+    "pages/report/index",
+    "pages/legal/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "月老办事处",
+    "navigationBarBackgroundColor": "#FFF8F0",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF8F0"
+  }
+}

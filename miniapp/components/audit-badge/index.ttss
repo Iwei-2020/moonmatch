@@ -1,0 +1,38 @@
+/* audit-badge · Token 取自线稿说明 §一（色值冻结） */
+.mm-badge {
+  display: inline-block;
+  padding: 6rpx 20rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid transparent;
+  font-size: 22rpx;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* 待审核：gold 系（#A97A1E / gold 14% / gold 62%） */
+.ab--pending {
+  color: #A97A1E;
+  background: rgba(217, 164, 65, 0.14);
+  border-color: rgba(217, 164, 65, 0.62);
+}
+
+/* 已通过 / 已解锁：ok 系 */
+.mm-badge--ok {
+  color: #3F7A5A;
+  background: rgba(63, 122, 90, 0.1);
+  border-color: rgba(63, 122, 90, 0.45);
+}
+
+/* 已驳回：warn 系（#A9631F / warn 16% / warn 实色） */
+.mm-badge--warn {
+  color: #A9631F;
+  background: rgba(201, 138, 46, 0.16);
+  border-color: #C98A2E;
+}
+
+/* 已下架 / 草稿：lock 系（#7A7069 / lock 16% / lock 75%） */
+.ab--lock {
+  color: #7A7069;
+  background: rgba(185, 175, 166, 0.16);
+  border-color: rgba(185, 175, 166, 0.75);
+}

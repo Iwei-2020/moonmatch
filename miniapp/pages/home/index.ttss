@@ -1,0 +1,153 @@
+/* P-01 首页 · Token 取自线稿说明 §一（色值冻结） */
+.home {
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+.home__hd {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.home__name {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 42rpx;
+  letter-spacing: 0.14em;
+  color: #3A2B2E;
+}
+
+.home__en {
+  margin-top: 6rpx;
+  font-size: 18rpx;
+  letter-spacing: 0.32em;
+  color: #D9A441;
+}
+
+.home__corner {
+  flex: none;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.28);
+  background: #FFFDFA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  color: #3A2B2E;
+}
+
+.home__lattice {
+  height: 1rpx;
+  margin: 28rpx 0 20rpx;
+  background: rgba(194, 64, 47, 0.28);
+}
+
+/* 一弯月：gold 实心圆 + paper 挖空圆成月牙 */
+.home__moon-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 20rpx 0 10rpx;
+}
+
+.home__moon {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: #D9A441;
+  opacity: 0.85;
+  position: relative;
+  overflow: hidden;
+}
+
+.home__moon::after {
+  content: "";
+  position: absolute;
+  left: 46rpx;
+  top: -20rpx;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: #FFF8F0;
+}
+
+.home__tagline {
+  text-align: center;
+  margin: 12rpx 0 28rpx;
+}
+
+.home__state {
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.28);
+  background: #FDF1E5;
+  padding: 18rpx 24rpx;
+}
+
+.home__state--pending,
+.home__state--rejected {
+  background: rgba(201, 138, 46, 0.1);
+  border-color: rgba(201, 138, 46, 0.45);
+  color: #8F6220;
+}
+
+.home__state--active {
+  background: rgba(63, 122, 90, 0.09);
+  border-color: rgba(63, 122, 90, 0.4);
+  color: #31603F;
+}
+
+.home__state-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home__state-text {
+  font-size: 23rpx;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.home__count {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 24rpx 4rpx 32rpx;
+}
+
+.home__count-label {
+  font-size: 23rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.home__count-num {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 30rpx;
+  color: #A32E22;
+}
+
+.home__cta {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.home__btn {
+  height: 92rpx;
+  line-height: 92rpx;
+  font-size: 29rpx;
+  border-radius: 999rpx;
+}
+
+.home__hint {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: #C98A2E;
+}
+
+.home__disclaimer {
+  margin-top: 40rpx;
+}

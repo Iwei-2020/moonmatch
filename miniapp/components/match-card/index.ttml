@@ -1,0 +1,30 @@
+<!-- match-card · 锁定 / 已解锁 / 失效（线稿说明 §9.2） -->
+<view class="mm-card mc mc--{{mode}}">
+  <view class="mc__head">
+    <view class="mc__title">{{title}}</view>
+    <view class="{{badgeCls}}">{{badgeText}}</view>
+  </view>
+
+  <view class="mc__sub">{{subText}}</view>
+
+  <view class="mc__field">
+    <contact-field
+      masked="{{masked}}"
+      contactType="{{contactType}}"
+      state="{{cfState}}"
+      profileId="{{profileId}}"
+      ticketId="{{ticketId}}"
+      bind:copy="onCopy"
+    />
+  </view>
+
+  <view tt:if="{{mode === 'locked'}}" class="mc__act">
+    <button class="mm-btn mm-btn--primary" bindtap="onUnlock">{{unlockText}}</button>
+  </view>
+
+  <view tt:if="{{mode === 'expired'}}" class="mc__warn">{{expiredText}}</view>
+
+  <view class="mc__foot">
+    <view class="mc__link" bindtap="onReport">举报</view>
+  </view>
+</view>

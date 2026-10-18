@@ -1,0 +1,120 @@
+/* P-07 协议与隐私 · Token 取自线稿说明 §一（色值冻结） */
+.legal {
+  min-height: 100vh;
+}
+
+.legal__hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.legal__back {
+  font-size: 24rpx;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.legal__title {
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 32rpx;
+  letter-spacing: 0.1em;
+  color: #3A2B2E;
+}
+
+.legal__spacer {
+  width: 60rpx;
+}
+
+.legal__lattice {
+  height: 1rpx;
+  margin: 0 0 28rpx;
+  background: rgba(194, 64, 47, 0.28);
+}
+
+.legal__card {
+  background: #FDF1E5;
+}
+
+.legal__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+}
+
+.legal__row-title {
+  font-size: 26rpx;
+  color: #3A2B2E;
+}
+
+.legal__row-title--danger {
+  color: #A32E22;
+}
+
+.legal__row-arrow {
+  font-size: 26rpx;
+  color: #B9AFA6;
+}
+
+.legal__body {
+  padding: 6rpx 0 20rpx;
+  font-size: 23rpx;
+  line-height: 1.8;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.legal__line {
+  height: 1rpx;
+  background: rgba(194, 64, 47, 0.28);
+}
+
+.legal__collect {
+  margin: 28rpx 0;
+  padding: 24rpx;
+  border: 1rpx dashed rgba(194, 64, 47, 0.55);
+  border-radius: 24rpx;
+  text-align: center;
+}
+
+.legal__collect-title {
+  font-size: 25rpx;
+  color: #A32E22;
+  margin-bottom: 14rpx;
+  letter-spacing: 0.04em;
+}
+
+.legal__collect-row {
+  display: flex;
+  justify-content: center;
+  font-size: 23rpx;
+  line-height: 1.9;
+  color: #3A2B2E;
+}
+
+.legal__collect-label {
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.legal__collect-value {
+  color: #3A2B2E;
+}
+
+.legal__collect-line {
+  margin-top: 14rpx;
+  font-size: 23rpx;
+  line-height: 1.8;
+  color: #3A2B2E;
+}
+
+.legal__note {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 23rpx;
+  line-height: 1.7;
+  color: rgba(58, 43, 46, 0.62);
+}
+
+.legal__disclaimer {
+  margin-top: 36rpx;
+}

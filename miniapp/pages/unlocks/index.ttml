@@ -1,0 +1,37 @@
+<!-- P-05 解锁记录 · 有记录 / 空 -->
+<view class="mm-page unl">
+  <view class="unl__hd">
+    <view class="unl__back" bindtap="goBack">‹ 返回</view>
+    <view class="unl__title">解锁记录</view>
+    <view class="unl__spacer"></view>
+  </view>
+
+  <view class="unl__count">
+    <view class="unl__count-label">{{remainText}}</view>
+    <view class="unl__count-num">{{remain}} 次 · {{resetText}}</view>
+  </view>
+
+  <block tt:if="{{empty}}">
+    <view class="unl__moon-wrap">
+      <view class="unl__moon"></view>
+    </view>
+    <view class="unl__empty-title">{{emptyTitle}}</view>
+    <view class="mm-sub unl__empty-desc">{{emptyDesc}}</view>
+    <button class="mm-btn mm-btn--primary unl__fetch" bindtap="goFetch">{{fetchBtnText}}</button>
+  </block>
+
+  <block tt:else>
+    <view class="unl__list">
+      <view tt:for="{{list}}" tt:key="profileId" class="unl__item">
+        <match-card card="{{item}}" mode="{{item.mode}}" />
+        <view class="unl__meta">
+          <view class="unl__time">{{item.unlockedAtText}} 解锁</view>
+          <view tt:if="{{item.freeChip}}" class="unl__chip unl__chip--ok">{{item.freeChip}}</view>
+          <view tt:if="{{item.mode === 'expired'}}" class="unl__chip unl__chip--warn">该资料已下线</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class="mm-disclaimer unl__disclaimer">{{disclaimer}}</view>
+</view>

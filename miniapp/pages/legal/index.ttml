@@ -1,0 +1,42 @@
+<!-- P-07 协议与隐私 · 静态页 -->
+<view class="mm-page legal">
+  <view class="legal__hd">
+    <view class="legal__back" bindtap="goBack">‹ 返回</view>
+    <view class="legal__title">{{title}}</view>
+    <view class="legal__spacer"></view>
+  </view>
+
+  <view class="legal__lattice"></view>
+
+  <view class="mm-card legal__card">
+    <block tt:for="{{sections}}" tt:key="key">
+      <view class="legal__row" data-index="{{index}}" bindtap="onToggle">
+        <view class="legal__row-title">{{item.title}}</view>
+        <view class="legal__row-arrow">{{item.open ? '⌄' : '›'}}</view>
+      </view>
+      <view tt:if="{{item.open}}" class="legal__body">{{item.body}}</view>
+      <view class="legal__line"></view>
+    </block>
+
+    <!-- 个人信息收集清单（必须显式列出） -->
+    <view class="legal__collect">
+      <view class="legal__collect-title">个人信息收集清单</view>
+      <view tt:for="{{collectItems}}" tt:key="label" class="legal__collect-row">
+        <view class="legal__collect-label">{{item.label}}：</view>
+        <view class="legal__collect-value">{{item.value}}</view>
+      </view>
+      <view class="legal__collect-line">{{collectLine}}</view>
+    </view>
+
+    <view class="legal__line"></view>
+
+    <view class="legal__row legal__row--danger" bindtap="onCancelAccount">
+      <view class="legal__row-title legal__row-title--danger">{{cancelTitle}}</view>
+      <view class="legal__row-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="legal__note">{{cancelDesc}}</view>
+
+  <view class="mm-disclaimer legal__disclaimer">{{disclaimer}}</view>
+</view>
