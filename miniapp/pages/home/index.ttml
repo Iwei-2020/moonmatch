@@ -1,4 +1,4 @@
-<!-- P-01 首页 · 仅「登记」「获取」两个业务入口 -->
+<!-- P-01 首页 · 仅「取一个」「拿一个」两个业务入口 -->
 <view class="mm-page home">
   <view class="home__hd">
     <view class="home__brand">
@@ -10,12 +10,26 @@
 
   <view class="home__lattice"></view>
 
-  <!-- 主视觉：一弯月 + 红绳（纯 CSS 绘制） -->
-  <view class="home__moon-wrap">
+  <!-- 主视觉：双光晕 + 一弯月 + 一缕红线 + 星点（纯 CSS 绘制，零素材） -->
+  <view class="home__hero">
+    <view class="home__halo home__halo--outer"></view>
+    <view class="home__halo home__halo--inner"></view>
     <view class="home__moon"></view>
+    <view class="home__thread"></view>
+    <view class="home__star home__star--a"></view>
+    <view class="home__star home__star--b"></view>
   </view>
 
   <view class="mm-sub home__tagline">{{tagline}}</view>
+
+  <!-- 缘分 / 运气 / 相遇（符号为纯 CSS 图形） -->
+  <view class="home__trio">
+    <view tt:for="{{trio}}" tt:key="key" class="home__tile">
+      <view class="home__glyph home__glyph--{{item.key}}"></view>
+      <view class="home__tile-label">{{item.label}}</view>
+      <view class="home__tile-text">{{item.text}}</view>
+    </view>
+  </view>
 
   <view class="home__state home__state--{{state}}">
     <view class="home__state-row">
@@ -25,19 +39,14 @@
   </view>
 
   <view class="home__count">
-    <view class="home__count-label">今日剩余获取次数</view>
-    <view class="home__count-num">{{remain}} 次</view>
+    <view class="home__count-label">今日剩余缘签</view>
+    <view class="home__count-num">{{remain}} 个</view>
   </view>
 
   <view class="home__cta">
-    <button class="mm-btn mm-btn--primary home__btn" bindtap="onTapRegister">{{mainBtnText}}</button>
-    <button
-      class="mm-btn {{fetchDisabled ? 'mm-btn--disabled' : 'mm-btn--primary'}} home__btn"
-      bindtap="onTapFetch"
-    >{{fetchBtnText}}</button>
+    <button class="mm-btn mm-btn--primary home__btn" bindtap="onTapTake">{{takeBtnText}}</button>
+    <button class="mm-btn mm-btn--ghost home__btn" bindtap="onTapKeep">{{keepBtnText}}</button>
   </view>
-
-  <view tt:if="{{fetchDisabled}}" class="home__hint">{{fetchTip}}</view>
 
   <view class="mm-disclaimer home__disclaimer">{{disclaimer}}</view>
 </view>

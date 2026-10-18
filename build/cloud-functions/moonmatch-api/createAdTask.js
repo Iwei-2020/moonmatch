@@ -172,14 +172,21 @@ function assertAllowed(result) {
   }
 }
 
-/** 取「我」的档案，并断言可参与匹配（未登记 / 审核中 / 已下架均不可获取） */
-async function requireActiveProfile(ctx) {
+/** 身份守卫：无 openid 无法记账与判重（平台薄壳从请求头直读，正常链路必不为空） */
+function requireOpenid(ctx) {
   if (!ctx.openid) throw domainError(ERROR_CODES.NOT_REGISTERED, 'missing_openid');
-  const profile = await ctx.store.getProfileByOpenid(ctx.openid);
-  if (!profile) throw domainError(ERROR_CODES.NOT_REGISTERED);
-  if (profile.status === PROFILE_STATUS.PENDING) throw domainError(ERROR_CODES.AUDIT_PENDING);
-  if (profile.status !== PROFILE_STATUS.ACTIVE) throw domainError(ERROR_CODES.PROFILE_OFFLINE, profile.status);
-  return profile;
+  return ctx.openid;
+}
+
+/**
+ * 读「我」的档案，**允许为 null**。
+ *
+ * 产品口径调整：取签不再以「先留缘签」为前提 —— 未留缘签 / 审核中 / 已下架的用户同样可以
+ * 直接取签；有档案时用于异性偏好与排除自己，无档案时走 matchLib 的「盲取」分支。
+ */
+async function loadProfile(ctx) {
+  requireOpenid(ctx);
+  return ctx.store.getProfileByOpenid(ctx.openid);
 }
 
 /** 统一异常收敛：任何 handler 的抛出都变成失败信封 */
@@ -201,10 +208,15 @@ const handleSubmitProfile = guard(async (params, ctx) => {
   return ok(result);
 });
 
-/** getProfile：读取我的档案（未登记返回 profile: null，不视为错误） */
+/** getProfile：读取我的档案（未留缘签返回 profile: null，不视为错误），并附今日配额快照供页面展示 */
 const handleGetProfile = guard(async (params, ctx) => {
-  const profile = await profileLib.getMyProfile(ctx.store, { openid: ctx.openid, now: ctx.now() });
-  return ok({ profile });
+  const now = ctx.now();
+  const raw = await ctx.store.getProfileByOpenid(ctx.openid);
+  const profile = raw ? profileLib.toPublicProfile(raw, now) : null;
+  const quota = ctx.openid
+    ? await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile: raw })
+    : null;
+  return ok({ profile, quota });
 });
 
 /** offlineProfile：上架 / 下架 */
@@ -216,12 +228,13 @@ const handleOfflineProfile = guard(async (params, ctx) => {
 /* ============================ 获取（流程 B） ============================ */
 
 /**
- * getMatch：随机匹配 1 份档案。
- * 池子为空**不是错误**，而是正常业务态（客户端展示「今日可获取的资料已取完」空态）。
+ * getMatch：随机取 1 份缘签。
+ * 池子为空**不是错误**，而是正常业务态（客户端展示「今日的缘签已取完」空态）。
+ * 未留缘签的用户也能取签（盲取，见 matchLib.pickMatch）。
  */
 const handleGetMatch = guard(async (params, ctx) => {
   const now = ctx.now();
-  const profile = await requireActiveProfile(ctx);
+  const profile = await loadProfile(ctx);
 
   assertAllowed(await risk.checkMatch(ctx.store, { openid: ctx.openid, now }));
 
@@ -258,10 +271,10 @@ const handleGetMatch = guard(async (params, ctx) => {
  */
 const handleCreateAdTask = guard(async (params, ctx) => {
   const now = ctx.now();
-  const profile = await requireActiveProfile(ctx);
+  const profile = await loadProfile(ctx);
   const profileId = params.profileId;
   if (!profileId) throw domainError(ERROR_CODES.INVALID_PARAM, 'profile_id_required');
-  if (profileId === profile.profileId) throw domainError(ERROR_CODES.INVALID_PARAM, 'self_unlock_forbidden');
+  if (profile && profileId === profile.profileId) throw domainError(ERROR_CODES.INVALID_PARAM, 'self_unlock_forbidden');
 
   assertAllowed(await risk.checkAdTrigger(ctx.store, { openid: ctx.openid, now, profile }));
 
@@ -374,7 +387,8 @@ const handleListUnlocked = guard(async (params, ctx) => {
   }
 
   items.sort((a, b) => (b.unlockedAt || 0) - (a.unlockedAt || 0));
-  return ok({ items });
+  const profile = await ctx.store.getProfileByOpenid(ctx.openid);
+  return ok({ items, quota: await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile }) });
 });
 
 /* ============================ 举报与埋点 ============================ */
@@ -573,31 +587,49 @@ function oppositeOf(gender) {
 
 /**
  * 抽取 1 份档案。
+ *
+ * `profile` 允许为 null：用户**无需先留缘签即可取签**（直接取用），
+ * 此时退化为「盲取」——不筛异性、不做年龄邻近，从全部在架档案里随机取一份，
+ * relaxationLevel 记为梯度末端（等同「不限年龄」）。
+ *
  * @param {object} store 存储
  * @param {object} args `{ openid, profile, now, random }`
  * @returns {Promise<{poolEmpty:boolean, relaxationLevel:number, card:object|null}>}
  */
 async function pickMatch(store, args) {
-  const { openid, profile, now } = args;
+  const { openid, profile } = args;
+  const now = args.now;
   const random = typeof args.random === 'function' ? args.random : defaultRandom;
   const steps = LIMITS.MATCH_AGE_STEPS;
 
-  const myAge = ageOf(profile.birthYear, now);
-  const wantGender = oppositeOf(profile.gender);
+  const myAge = profile ? ageOf(profile.birthYear, now) : null;
+  const wantGender = profile ? oppositeOf(profile.gender) : '';
 
   const candidates = (await store.listActiveProfiles())
-    .filter((p) => p.openid !== openid && p.gender === wantGender && p.status === PROFILE_STATUS.ACTIVE);
+    .filter((p) => p.openid !== openid && p.status === PROFILE_STATUS.ACTIVE && (!wantGender || p.gender === wantGender));
 
   const unlockedIds = new Set((await store.listUnlocks(openid)).map((u) => u.profileId));
   const fresh = candidates.filter((p) => !unlockedIds.has(p.profileId));
 
-  // ③ 年龄邻近逐级放宽（仅对未获取过的档案）
-  for (let level = 0; level < steps.length; level += 1) {
-    const step = steps[level];
-    const bucket = fresh.filter((p) => Math.abs(ageOf(p.birthYear, now) - myAge) <= step);
-    if (bucket.length) {
-      const picked = bucket[random(bucket.length)];
-      return { poolEmpty: false, relaxationLevel: level, card: await toMatchCard(picked, { now, store, openid }) };
+  if (fresh.length) {
+    // 盲取：无自有档案时不筛年龄，直接随机取一份
+    if (myAge === null) {
+      const picked = fresh[random(fresh.length)];
+      return {
+        poolEmpty: false,
+        relaxationLevel: steps.length - 1,
+        card: await toMatchCard(picked, { now, store, openid }),
+      };
+    }
+
+    // ③ 年龄邻近逐级放宽（仅对未获取过的档案）
+    for (let level = 0; level < steps.length; level += 1) {
+      const step = steps[level];
+      const bucket = fresh.filter((p) => Math.abs(ageOf(p.birthYear, now) - myAge) <= step);
+      if (bucket.length) {
+        const picked = bucket[random(bucket.length)];
+        return { poolEmpty: false, relaxationLevel: level, card: await toMatchCard(picked, { now, store, openid }) };
+      }
     }
   }
 
@@ -615,7 +647,7 @@ async function pickMatch(store, args) {
   return { poolEmpty: true, relaxationLevel: steps.length, card: null };
 }
 
-/** 卡片视图：带解锁态与免费复看标记，联系方式一律掩码 */
+/** 卡片视图：带解锁态与免费复看标记，缘签一律掩码 */
 async function toMatchCard(candidate, { now, store, openid }) {
   const view = toPublicProfile(candidate, now);
   const unlock = await store.getUnlock(openid, candidate.profileId);
@@ -980,7 +1012,7 @@ async function noteUnlock(store, { openid, now }) {
   return persistCounters(store, openid, now, c);
 }
 
-/** 当前配额快照（供客户端展示；服务端为准） */
+/** 当前配额快照（供客户端展示；服务端为准）。`remainUnlock` 为今日剩余解签额度，供页面直接展示 */
 async function quotaSnapshot(store, { openid, now, profile }) {
   const c = await counters(store, openid, now);
   const unlockLimit = isNewUser(profile, now) ? LIMITS.NEW_USER_DAILY_UNLOCK : LIMITS.DAILY_UNLOCK;
@@ -990,6 +1022,7 @@ async function quotaSnapshot(store, { openid, now, profile }) {
     matchLimit: LIMITS.DAILY_MATCH,
     unlockUsed: c.unlock,
     unlockLimit,
+    remainUnlock: Math.max(0, unlockLimit - c.unlock),
   };
 }
 
@@ -1522,13 +1555,13 @@ module.exports = { createTask, claimTicket, consumeTicket, recordUnlock };
  * 客户端常量（冻结契约）
  *
  * 依据：《项目说明书-月老办事处》§2（业务流程）、§5（广告策略与频次限制）、
- * §6.4（联系方式三态渲染）、§7（埋点事件清单）、§4（页面清单）。
+ * §6.4（缘签三态渲染）、§7（埋点事件清单）、§4（页面清单）。
  *
  * 本文件是**客户端与服务端共同遵守的契约**：
  *   - 错误码 ERROR_CODES 与 server/lib/errors.js 必须逐条一致；
  *   - 限额 LIMITS 与 server/lib/risk.js 的默认值必须一致（服务端为准，客户端仅用于展示）；
- *   - 文案 COPY 逐字取自说明书，研发不得自行改写（线稿说明 §合规文案专区）。
- * 客户端源码中不得出现明文联系方式（tools/check-structure.js 已设门禁）。
+ *   - 文案 COPY 面向用户，统一「缘签」词表（本文件即文案唯一来源）。
+ * 客户端源码中不得出现明文缘签（tools/check-structure.js 已设门禁）。
  */
 
 /** 统一错误码：服务端信封 { code, msg, data } 的 code 取值 */
@@ -1556,7 +1589,7 @@ const ERROR_CODES = {
 
 /** 本地存储键（统一经 core/storage.js 读写） */
 const STORE = {
-  PROFILE: 'mm_profile', // 我的档案摘要（不含明文联系方式）
+  PROFILE: 'mm_profile', // 我的档案摘要（不含明文缘签）
   QUOTA: 'mm_quota', // 今日次数展示缓存
   TRACK: 'mm_track_queue', // 埋点队列
   UNLOCKS: 'mm_unlocks', // 解锁记录摘要
@@ -1611,7 +1644,7 @@ const EVENTS = {
   SESSION_END: 'session_end',
 };
 
-/** 联系方式类型白名单（说明书 §6.4；微信号/QQ 不开放） */
+/** 缘签类型白名单（说明书 §6.4；微信号/QQ 不开放）。仅供服务端校验与掩码分发，不再对用户展示区分 */
 const CONTACT_TYPES = {
   PHONE: 'phone',
   DOUYIN: 'douyin',
@@ -1655,31 +1688,43 @@ const AD = {
   MIN_PLAY_MS: 0, // 完整观看以 isEndReached 为准，不做时长臆测
 };
 
-/** 文案（逐字取自说明书与线稿说明的合规文案专区） */
+/**
+ * 文案（缘签隐喻统一词表）
+ *
+ * 词表：联系方式 → 「缘签」；登记入口 → 「拿一个」；获取入口 → 「取一个」；广告揭开 → 「解签」。
+ * 全站不再出现「联系方式」「手机号」「抖音号」这类直白描述，也不对用户做号码类型的区分。
+ * 文案可读性优先，功能语义（字段名 / 状态键 / 错误码 / 埋点）一律保持原样不变。
+ */
 const COPY = {
-  HOME_TAGLINE: '留个联系方式，看看谁在等你',
-  BTN_REGISTER: '登记我的资料',
-  BTN_FETCH: '获取一个联系方式',
-  NOT_REGISTERED_TIP: '先登记自己的资料，才能获取他人联系方式',
-  BTN_UNLOCK: '看广告解锁',
-  BTN_COPY: '复制联系方式',
-  UNLOCK_NOTICE: '完整观看 1 条激励视频，即可解锁对方联系方式',
-  AD_PLAYING_TIP: '看完就能解锁，请勿中途退出',
-  AD_GRANTING: '正在确认奖励…',
+  HOME_TAGLINE: '留一个缘签，看看谁在等你',
+  BTN_REGISTER: '拿一个',
+  BTN_FETCH: '取一个',
+  BTN_UNLOCK: '看广告解签',
+  BTN_COPY: '复制缘签',
+  UNLOCK_NOTICE: '完整观看 1 条激励视频，即可揭开对方的缘签',
+  AD_PLAYING_TIP: '看完即可解签，请勿中途退出',
+  AD_GRANTING: '正在为你解签…',
   COPY_OK: '已复制，请合规使用',
-  UNLOCK_COMPLIANCE: '解锁后仅可复制，请勿用于骚扰或营销',
-  DAILY_LIMIT: '今日获取次数已用完，明天再来',
+  UNLOCK_COMPLIANCE: '解签后仅可复制，请勿用于骚扰或营销',
+  DAILY_LIMIT: '今日次数已用完，明天再来',
   MATCH_COOLDOWN: '操作太快了，稍后再试',
-  POOL_EMPTY: '今日可获取的资料已取完，明天再来',
-  MATCHING: '正在为你寻找…',
-  EXPIRED: '该资料已下线',
+  POOL_EMPTY: '今日的缘签已取完，明天再来',
+  MATCHING: '正在为你寻缘…',
+  EXPIRED: '该缘签已失效',
   AD_FAILED: '广告加载失败，请稍后重试',
   HOME_DISCLAIMER: '本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实',
-  REGISTER_HINT: '填写 3 项，10 秒完成；联系方式仅在你主动解锁后才可复制',
+  REGISTER_HINT: '填 3 项，10 秒完成；你的缘签在你亲手揭开前，谁都不会看到',
   REPORT_DONE: '举报已提交，我们会尽快核实',
   AUDIT_PENDING: '资料审核中',
   REJECTED_PREFIX: '已驳回：',
-  CHANGE_CONTACT_NOTICE: '变更联系方式需重新审核',
+  CHANGE_CONTACT_NOTICE: '变更缘签需重新审核',
+  /* 首页三味：缘分 / 运气 / 相遇 */
+  HOME_FATE_LABEL: '缘分',
+  HOME_FATE_TEXT: '月老已为你记下名字，一线牵起，只待相逢',
+  HOME_LUCK_LABEL: '运气',
+  HOME_LUCK_TEXT: '每一签皆由天意抽出，好运自会落定',
+  HOME_MEET_LABEL: '相遇',
+  HOME_MEET_TEXT: '取一签，便与某个人的缘分近了一分',
 };
 
 module.exports = {

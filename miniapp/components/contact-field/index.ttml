@@ -1,4 +1,4 @@
-<!-- contact-field · 三态渲染（说明书 §6.4）：锁定 / 已解锁 / 失效 -->
+<!-- contact-field · 三态渲染（说明书 §6.4）：锁定 / 已解签 / 失效 -->
 <view class="cf cf--{{state}}">
   <view class="cf__row">
     <view class="mm-mask cf__mask">{{masked}}</view>

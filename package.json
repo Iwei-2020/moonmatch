@@ -2,7 +2,7 @@
   "name": "moonmatch",
   "version": "0.1.0",
   "private": true,
-  "description": "月老办事处（Moonmatch）· 抖音小程序 —— 双入口极简相亲工具（登记 / 获取）",
+  "description": "月老办事处（Moonmatch）· 抖音小程序 —— 双入口极简相亲工具（取一个 / 拿一个）",
   "type": "commonjs",
   "engines": {
     "node": ">=20"

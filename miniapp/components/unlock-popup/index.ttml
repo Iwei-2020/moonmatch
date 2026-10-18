@@ -5,7 +5,7 @@
       <view tt:for="{{dots}}" class="{{item.cls}}"></view>
     </view>
 
-    <!-- ① 解锁须知 -->
+    <!-- ① 解签须知 -->
     <block tt:if="{{state === 'notice'}}">
       <view class="up__title">{{noticeTitle}}</view>
       <view class="up__msg">{{noticeText}}</view>

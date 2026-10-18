@@ -1,10 +1,10 @@
 'use strict';
 
 /**
- * P-03 我的档案（4 态：待审核 / 已登记 / 已驳回 / 已下架）
+ * P-03 我的档案（4 态：待审核 / 已留 / 已驳回 / 已下架）
  *
  * 依据：说明书 §2.1 A2–A8、§4 P-03；线稿说明 §四。
- * 边界：不展示档案编号；不展示任何联系明文（本页仅渲染掩码，不提供复制入口）。
+ * 边界：不展示档案编号；不展示任何缘签明文（本页仅渲染掩码，不提供复制入口）。
  */
 
 const { PAGES, ROUTES, COPY, PROFILE_STATUS, CONTACT_TYPES, EVENTS } = require('../../shared/client-constants.js');

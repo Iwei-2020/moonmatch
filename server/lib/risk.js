@@ -154,7 +154,7 @@ async function noteUnlock(store, { openid, now }) {
   return persistCounters(store, openid, now, c);
 }
 
-/** 当前配额快照（供客户端展示；服务端为准） */
+/** 当前配额快照（供客户端展示；服务端为准）。`remainUnlock` 为今日剩余解签额度，供页面直接展示 */
 async function quotaSnapshot(store, { openid, now, profile }) {
   const c = await counters(store, openid, now);
   const unlockLimit = isNewUser(profile, now) ? LIMITS.NEW_USER_DAILY_UNLOCK : LIMITS.DAILY_UNLOCK;
@@ -164,6 +164,7 @@ async function quotaSnapshot(store, { openid, now, profile }) {
     matchLimit: LIMITS.DAILY_MATCH,
     unlockUsed: c.unlock,
     unlockLimit,
+    remainUnlock: Math.max(0, unlockLimit - c.unlock),
   };
 }
 

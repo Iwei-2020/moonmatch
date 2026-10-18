@@ -1,4 +1,4 @@
-<!-- match-card · 锁定 / 已解锁 / 失效（线稿说明 §9.2） -->
+<!-- match-card · 锁定 / 已解签 / 失效（线稿说明 §9.2） -->
 <view class="mm-card mc mc--{{mode}}">
   <view class="mc__head">
     <view class="mc__title">{{title}}</view>

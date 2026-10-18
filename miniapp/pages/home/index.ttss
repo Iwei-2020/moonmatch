@@ -44,37 +44,209 @@
   background: rgba(194, 64, 47, 0.28);
 }
 
-/* 一弯月：gold 实心圆 + paper 挖空圆成月牙 */
-.home__moon-wrap {
+/* 主视觉：双光晕 + 月牙 + 红线 + 星点（纯 CSS，零素材） */
+.home__hero {
+  position: relative;
+  height: 250rpx;
+  margin: 8rpx 0 4rpx;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin: 20rpx 0 10rpx;
 }
 
-.home__moon {
-  width: 200rpx;
-  height: 200rpx;
+.home__halo {
+  position: absolute;
   border-radius: 50%;
-  background: #D9A441;
-  opacity: 0.85;
+  box-sizing: border-box;
+}
+
+.home__halo--outer {
+  width: 236rpx;
+  height: 236rpx;
+  border: 1rpx solid rgba(217, 164, 65, 0.22);
+}
+
+.home__halo--inner {
+  width: 178rpx;
+  height: 178rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.16);
+}
+
+/* 一弯月：gold 渐变实心圆 + paper 挖空圆成月牙 */
+.home__moon {
   position: relative;
+  width: 132rpx;
+  height: 132rpx;
+  border-radius: 50%;
   overflow: hidden;
+  background: linear-gradient(135deg, #F0C468, #D9A441 58%, #C98A2E);
+  box-shadow: 0 0 46rpx rgba(217, 164, 65, 0.5);
 }
 
 .home__moon::after {
   content: "";
   position: absolute;
-  left: 46rpx;
-  top: -20rpx;
-  width: 200rpx;
-  height: 200rpx;
+  left: 32rpx;
+  top: -16rpx;
+  width: 132rpx;
+  height: 132rpx;
   border-radius: 50%;
   background: #FFF8F0;
 }
 
+/* 红线：斜贯主视觉的一道红绳 */
+.home__thread {
+  position: absolute;
+  width: 300rpx;
+  height: 3rpx;
+  border-radius: 999rpx;
+  transform: rotate(-16deg);
+  background: linear-gradient(90deg, rgba(194, 64, 47, 0), rgba(194, 64, 47, 0.85), rgba(194, 64, 47, 0));
+}
+
+.home__star {
+  position: absolute;
+  border-radius: 50%;
+  background: #D9A441;
+}
+
+.home__star--a {
+  top: 34rpx;
+  right: 96rpx;
+  width: 8rpx;
+  height: 8rpx;
+  opacity: 0.85;
+}
+
+.home__star--b {
+  bottom: 44rpx;
+  left: 88rpx;
+  width: 6rpx;
+  height: 6rpx;
+  opacity: 0.55;
+}
+
 .home__tagline {
   text-align: center;
-  margin: 12rpx 0 28rpx;
+  margin: 14rpx 0 22rpx;
+}
+
+/* 缘分 / 运气 / 相遇 */
+.home__trio {
+  display: flex;
+  gap: 14rpx;
+  margin-bottom: 22rpx;
+}
+
+.home__tile {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 10rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(194, 64, 47, 0.16);
+  background: linear-gradient(180deg, rgba(253, 241, 229, 0.92), rgba(255, 253, 250, 0.92));
+}
+
+.home__tile-label {
+  margin-top: 12rpx;
+  font-family: "Songti SC", "LXGW WenKai", serif;
+  font-size: 24rpx;
+  letter-spacing: 0.12em;
+  color: #3A2B2E;
+}
+
+.home__tile-text {
+  margin-top: 6rpx;
+  font-size: 19rpx;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(58, 43, 46, 0.6);
+}
+
+/* 三味符号（纯 CSS）：缘分 = 双环相扣 / 运气 = 旋转菱星 / 相遇 = 两点连线 */
+.home__glyph {
+  position: relative;
+  width: 52rpx;
+  height: 38rpx;
+  box-sizing: border-box;
+}
+
+.home__glyph--fate::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30rpx;
+  height: 30rpx;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2rpx solid #C2402F;
+}
+
+.home__glyph--fate::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30rpx;
+  height: 30rpx;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2rpx solid #D9A441;
+}
+
+.home__glyph--luck::before {
+  content: "";
+  position: absolute;
+  left: 13rpx;
+  top: 3rpx;
+  width: 26rpx;
+  height: 26rpx;
+  border-radius: 6rpx;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #F0C468, #C98A2E);
+}
+
+.home__glyph--luck::after {
+  content: "";
+  position: absolute;
+  left: 19rpx;
+  top: 9rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 3rpx;
+  transform: rotate(45deg);
+  background: #FFF8F0;
+}
+
+.home__glyph--meet {
+  height: 30rpx;
+  border-bottom: 2rpx solid rgba(194, 64, 47, 0.45);
+}
+
+.home__glyph--meet::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #C2402F;
+}
+
+.home__glyph--meet::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #D9A441;
 }
 
 .home__state {
@@ -104,16 +276,16 @@
 }
 
 .home__state-text {
+  flex: 1;
   font-size: 23rpx;
   line-height: 1.6;
-  flex: 1;
 }
 
 .home__count {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin: 24rpx 4rpx 32rpx;
+  margin: 24rpx 4rpx 28rpx;
 }
 
 .home__count-label {
@@ -138,14 +310,6 @@
   line-height: 92rpx;
   font-size: 29rpx;
   border-radius: 999rpx;
-}
-
-.home__hint {
-  margin-top: 20rpx;
-  text-align: center;
-  font-size: 23rpx;
-  line-height: 1.6;
-  color: #C98A2E;
 }
 
 .home__disclaimer {

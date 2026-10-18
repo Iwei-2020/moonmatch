@@ -117,13 +117,15 @@ test('claimTicket：未完整观看不发券，并累计失败供豁免通道判
   assert.equal(denied.data.failures, 1);
 });
 
-test('前置守卫：未登记不可获取；自身不可解锁；参数缺失报 INVALID_PARAM', async () => {
+test('前置守卫：未留缘签也可取签；自身不可解锁；参数缺失报 INVALID_PARAM', async () => {
   const store = createMemoryStore({});
   const clock = { now: NOW };
   const peer = await register(store, 'peer', 'female', PHONE_B);
 
   const unregistered = await handlers.handleGetMatch({}, makeCtx(store, 'ghost', clock));
-  assert.equal(unregistered.code, ERROR_CODES.NOT_REGISTERED);
+  assert.equal(unregistered.code, 0, '取签不再以先留缘签为前提');
+  assert.equal(unregistered.data.poolEmpty, false);
+  assert.equal(unregistered.data.card.profileId, peer.data.profileId, '未留缘签走盲取，仍随机取一份');
 
   await register(store, 'me', 'male', PHONE_A);
   const noParam = await handlers.handleCreateAdTask({}, makeCtx(store, 'me', clock));
@@ -149,7 +151,8 @@ test('getProfile / offlineProfile / reportProfile / reportEvents 基础契约', 
   assert.equal(offline.data.status, 'offline');
 
   const blocked = await handlers.handleGetMatch({}, makeCtx(store, 'me', clock));
-  assert.equal(blocked.code, ERROR_CODES.PROFILE_OFFLINE, '下架后不可参与获取');
+  assert.equal(blocked.code, 0, '取签不再要求登记态，下架后仍可取签');
+  assert.equal(blocked.data.poolEmpty, true, '池中仅有自己且已下架 → 无签可取');
 
   const report = await handlers.handleReportProfile({ profileId: 'MM-XXXXXX', reasonType: 'fake' }, makeCtx(store, 'me', clock));
   assert.equal(report.code, ERROR_CODES.PROFILE_NOT_FOUND);

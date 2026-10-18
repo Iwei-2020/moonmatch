@@ -1,8 +1,8 @@
-<!-- P-05 解锁记录 · 有记录 / 空 -->
+<!-- P-05 缘签簿 · 有记录 / 空 -->
 <view class="mm-page unl">
   <view class="unl__hd">
     <view class="unl__back" bindtap="goBack">‹ 返回</view>
-    <view class="unl__title">解锁记录</view>
+    <view class="unl__title">缘签簿</view>
     <view class="unl__spacer"></view>
   </view>
 
@@ -25,7 +25,7 @@
       <view tt:for="{{list}}" tt:key="profileId" class="unl__item">
         <match-card card="{{item}}" mode="{{item.mode}}" />
         <view class="unl__meta">
-          <view class="unl__time">{{item.unlockedAtText}} 解锁</view>
+          <view class="unl__time">{{item.unlockedAtText}} 解签</view>
           <view tt:if="{{item.freeChip}}" class="unl__chip unl__chip--ok">{{item.freeChip}}</view>
           <view tt:if="{{item.mode === 'expired'}}" class="unl__chip unl__chip--warn">该资料已下线</view>
         </view>

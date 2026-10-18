@@ -3,8 +3,8 @@
 /**
  * 会话与「我的档案」摘要缓存
  *
- * 依据：《项目说明书-月老办事处》§2.1 A1–A8（进入小程序读登记状态、档案状态流转）、
- * §6.1（登记前置：未登记不可获取）、§8.4（前端仅缓存掩码，**禁止明文落 localStorage**）。
+ * 依据：《项目说明书-月老办事处》§2.1 A1–A8（进入小程序读状态、档案状态流转）、
+ * §6.1（取签不再以先留缘签为前提）、§8.4（前端仅缓存掩码，**禁止明文落 localStorage**）。
  *
  * 存储键取自冻结契约 STORE，禁止散落定义：
  *   - `STORE.SESSION` 会话与启动环境（session_id）
@@ -69,7 +69,7 @@ function createSession(storage, options) {
   }
 
   /**
-   * 写入档案摘要。**无论上游传入什么，联系方式一律经 maskContact 重新掩码**，
+   * 写入档案摘要。**无论上游传入什么，缘签一律经 maskContact 重新掩码**，
    * 并对整条记录断言无明文，断言不通过则拒绝写入。
    * @param {object} input { profile_no?, gender?, age?, contact_type?, contact_masked|contact?, status?, reject_reason? }
    * @returns {boolean} 是否成功落盘
@@ -92,7 +92,7 @@ function createSession(storage, options) {
       updated_at: now(),
     };
 
-    // 合规自检：整条记录不得含明文联系方式，否则拒绝落盘（§8.4）
+    // 合规自检：整条记录不得含明文缘签，否则拒绝落盘（§8.4）
     if (!assertNoPlaintext(JSON.stringify(record))) return false;
     return storage.write(STORE.PROFILE, record);
   }

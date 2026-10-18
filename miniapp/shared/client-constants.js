@@ -4,13 +4,13 @@
  * 客户端常量（冻结契约）
  *
  * 依据：《项目说明书-月老办事处》§2（业务流程）、§5（广告策略与频次限制）、
- * §6.4（联系方式三态渲染）、§7（埋点事件清单）、§4（页面清单）。
+ * §6.4（缘签三态渲染）、§7（埋点事件清单）、§4（页面清单）。
  *
  * 本文件是**客户端与服务端共同遵守的契约**：
  *   - 错误码 ERROR_CODES 与 server/lib/errors.js 必须逐条一致；
  *   - 限额 LIMITS 与 server/lib/risk.js 的默认值必须一致（服务端为准，客户端仅用于展示）；
- *   - 文案 COPY 逐字取自说明书，研发不得自行改写（线稿说明 §合规文案专区）。
- * 客户端源码中不得出现明文联系方式（tools/check-structure.js 已设门禁）。
+ *   - 文案 COPY 面向用户，统一「缘签」词表（本文件即文案唯一来源）。
+ * 客户端源码中不得出现明文缘签（tools/check-structure.js 已设门禁）。
  */
 
 /** 统一错误码：服务端信封 { code, msg, data } 的 code 取值 */
@@ -38,7 +38,7 @@ const ERROR_CODES = {
 
 /** 本地存储键（统一经 core/storage.js 读写） */
 const STORE = {
-  PROFILE: 'mm_profile', // 我的档案摘要（不含明文联系方式）
+  PROFILE: 'mm_profile', // 我的档案摘要（不含明文缘签）
   QUOTA: 'mm_quota', // 今日次数展示缓存
   TRACK: 'mm_track_queue', // 埋点队列
   UNLOCKS: 'mm_unlocks', // 解锁记录摘要
@@ -93,7 +93,7 @@ const EVENTS = {
   SESSION_END: 'session_end',
 };
 
-/** 联系方式类型白名单（说明书 §6.4；微信号/QQ 不开放） */
+/** 缘签类型白名单（说明书 §6.4；微信号/QQ 不开放）。仅供服务端校验与掩码分发，不再对用户展示区分 */
 const CONTACT_TYPES = {
   PHONE: 'phone',
   DOUYIN: 'douyin',
@@ -137,31 +137,43 @@ const AD = {
   MIN_PLAY_MS: 0, // 完整观看以 isEndReached 为准，不做时长臆测
 };
 
-/** 文案（逐字取自说明书与线稿说明的合规文案专区） */
+/**
+ * 文案（缘签隐喻统一词表）
+ *
+ * 词表：联系方式 → 「缘签」；登记入口 → 「拿一个」；获取入口 → 「取一个」；广告揭开 → 「解签」。
+ * 全站不再出现「联系方式」「手机号」「抖音号」这类直白描述，也不对用户做号码类型的区分。
+ * 文案可读性优先，功能语义（字段名 / 状态键 / 错误码 / 埋点）一律保持原样不变。
+ */
 const COPY = {
-  HOME_TAGLINE: '留个联系方式，看看谁在等你',
-  BTN_REGISTER: '登记我的资料',
-  BTN_FETCH: '获取一个联系方式',
-  NOT_REGISTERED_TIP: '先登记自己的资料，才能获取他人联系方式',
-  BTN_UNLOCK: '看广告解锁',
-  BTN_COPY: '复制联系方式',
-  UNLOCK_NOTICE: '完整观看 1 条激励视频，即可解锁对方联系方式',
-  AD_PLAYING_TIP: '看完就能解锁，请勿中途退出',
-  AD_GRANTING: '正在确认奖励…',
+  HOME_TAGLINE: '留一个缘签，看看谁在等你',
+  BTN_REGISTER: '拿一个',
+  BTN_FETCH: '取一个',
+  BTN_UNLOCK: '看广告解签',
+  BTN_COPY: '复制缘签',
+  UNLOCK_NOTICE: '完整观看 1 条激励视频，即可揭开对方的缘签',
+  AD_PLAYING_TIP: '看完即可解签，请勿中途退出',
+  AD_GRANTING: '正在为你解签…',
   COPY_OK: '已复制，请合规使用',
-  UNLOCK_COMPLIANCE: '解锁后仅可复制，请勿用于骚扰或营销',
-  DAILY_LIMIT: '今日获取次数已用完，明天再来',
+  UNLOCK_COMPLIANCE: '解签后仅可复制，请勿用于骚扰或营销',
+  DAILY_LIMIT: '今日次数已用完，明天再来',
   MATCH_COOLDOWN: '操作太快了，稍后再试',
-  POOL_EMPTY: '今日可获取的资料已取完，明天再来',
-  MATCHING: '正在为你寻找…',
-  EXPIRED: '该资料已下线',
+  POOL_EMPTY: '今日的缘签已取完，明天再来',
+  MATCHING: '正在为你寻缘…',
+  EXPIRED: '该缘签已失效',
   AD_FAILED: '广告加载失败，请稍后重试',
   HOME_DISCLAIMER: '本小程序仅提供信息展示，不对用户资料真实性作担保，请谨慎核实',
-  REGISTER_HINT: '填写 3 项，10 秒完成；联系方式仅在你主动解锁后才可复制',
+  REGISTER_HINT: '填 3 项，10 秒完成；你的缘签在你亲手揭开前，谁都不会看到',
   REPORT_DONE: '举报已提交，我们会尽快核实',
   AUDIT_PENDING: '资料审核中',
   REJECTED_PREFIX: '已驳回：',
-  CHANGE_CONTACT_NOTICE: '变更联系方式需重新审核',
+  CHANGE_CONTACT_NOTICE: '变更缘签需重新审核',
+  /* 首页三味：缘分 / 运气 / 相遇 */
+  HOME_FATE_LABEL: '缘分',
+  HOME_FATE_TEXT: '月老已为你记下名字，一线牵起，只待相逢',
+  HOME_LUCK_LABEL: '运气',
+  HOME_LUCK_TEXT: '每一签皆由天意抽出，好运自会落定',
+  HOME_MEET_LABEL: '相遇',
+  HOME_MEET_TEXT: '取一签，便与某个人的缘分近了一分',
 };
 
 module.exports = {

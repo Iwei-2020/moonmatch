@@ -1,4 +1,4 @@
-/* P-02 登记 · Token 取自线稿说明 §一（色值冻结） */
+/* P-02 留缘签 · Token 取自线稿说明 §一（色值冻结） */
 .reg {
   min-height: 100vh;
   position: relative;
@@ -70,29 +70,6 @@
   background: #FFFDFA;
   font-size: 27rpx;
   color: #3A2B2E;
-}
-
-.reg__seg {
-  display: flex;
-  height: 72rpx;
-  border-radius: 24rpx;
-  border: 1rpx solid rgba(194, 64, 47, 0.28);
-  overflow: hidden;
-}
-
-.reg__seg-item {
-  flex: 1;
-  line-height: 72rpx;
-  text-align: center;
-  font-size: 25rpx;
-  color: rgba(58, 43, 46, 0.62);
-  background: #FFFDFA;
-}
-
-.reg__seg-item--on {
-  background: #FDF1E5;
-  color: #A32E22;
-  font-weight: 600;
 }
 
 .reg__masked {

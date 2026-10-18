@@ -1,4 +1,4 @@
-<!-- P-03 我的档案 · 待审核 / 已登记 / 已驳回 / 已下架 -->
+<!-- P-03 我的档案 · 待审核 / 已留 / 已驳回 / 已下架 -->
 <view class="mm-page prof">
   <view class="prof__hd">
     <view class="prof__back" >‹ 返回</view>
@@ -12,7 +12,7 @@
       <audit-badge status="{{status}}" />
     </view>
     <view class="prof__divider"></view>
-    <view class="prof__label">联系方式（掩码）</view>
+    <view class="prof__label">缘签（掩码）</view>
     <view class="prof__mask-row">
       <view class="mm-mask prof__mask">{{masked}}</view>
       <view class="prof__lock">🔒</view>
@@ -20,7 +20,7 @@
   </view>
 
   <view tt:if="{{state === 'pending' || state === 'active' || state === 'offline'}}" class="prof__summary prof__summary--{{state}}">
-    {{summary}}<block tt:if="{{state === 'active'}}"> · 今日被获取 {{fetchedCount}} 次</block>
+    {{summary}}<block tt:if="{{state === 'active'}}"> · 今日被取 {{fetchedCount}} 次</block>
   </view>
 
   <view tt:if="{{state === 'rejected' && rejectReason}}" class="prof__reject">

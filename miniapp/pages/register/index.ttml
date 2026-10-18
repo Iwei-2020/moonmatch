@@ -1,4 +1,4 @@
-<!-- P-02 登记 · 半屏表单（仅 3 个字段） -->
+<!-- P-02 留缘签 · 半屏表单（仅 3 个字段） -->
 <view class="mm-page reg">
   <view class="reg__backdrop"></view>
 
@@ -28,29 +28,18 @@
       bindinput="onAge"
     />
 
-    <!-- ④ 联系方式类型（分段控件） -->
-    <view class="reg__label">联系方式类型</view>
-    <view class="reg__seg">
-      <view
-        tt:for="{{contactTypeOptions}}"
-        tt:key="value"
-        class="reg__seg-item {{contactType === item.value ? 'reg__seg-item--on' : ''}}"
-        data-value="{{item.value}}"
-        bindtap="onContactType"
-      >{{item.label}}</view>
-    </view>
-
-    <!-- ⑤ 联系方式输入（掩码回显） -->
+    <!-- ④ 缘签（单一输入，不区分号码类型；掩码回显） -->
+    <view class="reg__label">缘签</view>
     <input
       class="reg__input"
       value="{{contact}}"
-      placeholder="请输入"
+      placeholder="填入一组可被搜索到的号码或 ID"
       bindinput="onContact"
     />
     <view class="reg__masked">{{contactMasked}}</view>
     <view class="reg__tip">输入过程与回显均为掩码，明文不进入视图层</view>
 
-    <!-- ⑥ 协议勾选 -->
+    <!-- ⑤ 协议勾选 -->
     <checkbox-group class="reg__agree" bindchange="onAgree">
       <label class="reg__agree-row">
         <checkbox value="agree" checked="{{agreed}}" />
@@ -59,7 +48,7 @@
     </checkbox-group>
     <view class="reg__link" bindtap="goLegal">查看《用户协议》《隐私政策》</view>
 
-    <!-- ⑦ 提交 -->
+    <!-- ⑥ 提交 -->
     <button
       class="mm-btn {{submitting ? 'mm-btn--disabled' : 'mm-btn--primary'}} reg__submit"
       disabled="{{submitting}}"

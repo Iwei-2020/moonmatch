@@ -52,14 +52,21 @@ function assertAllowed(result) {
   }
 }
 
-/** 取「我」的档案，并断言可参与匹配（未登记 / 审核中 / 已下架均不可获取） */
-async function requireActiveProfile(ctx) {
+/** 身份守卫：无 openid 无法记账与判重（平台薄壳从请求头直读，正常链路必不为空） */
+function requireOpenid(ctx) {
   if (!ctx.openid) throw domainError(ERROR_CODES.NOT_REGISTERED, 'missing_openid');
-  const profile = await ctx.store.getProfileByOpenid(ctx.openid);
-  if (!profile) throw domainError(ERROR_CODES.NOT_REGISTERED);
-  if (profile.status === PROFILE_STATUS.PENDING) throw domainError(ERROR_CODES.AUDIT_PENDING);
-  if (profile.status !== PROFILE_STATUS.ACTIVE) throw domainError(ERROR_CODES.PROFILE_OFFLINE, profile.status);
-  return profile;
+  return ctx.openid;
+}
+
+/**
+ * 读「我」的档案，**允许为 null**。
+ *
+ * 产品口径调整：取签不再以「先留缘签」为前提 —— 未留缘签 / 审核中 / 已下架的用户同样可以
+ * 直接取签；有档案时用于异性偏好与排除自己，无档案时走 matchLib 的「盲取」分支。
+ */
+async function loadProfile(ctx) {
+  requireOpenid(ctx);
+  return ctx.store.getProfileByOpenid(ctx.openid);
 }
 
 /** 统一异常收敛：任何 handler 的抛出都变成失败信封 */
@@ -81,10 +88,15 @@ const handleSubmitProfile = guard(async (params, ctx) => {
   return ok(result);
 });
 
-/** getProfile：读取我的档案（未登记返回 profile: null，不视为错误） */
+/** getProfile：读取我的档案（未留缘签返回 profile: null，不视为错误），并附今日配额快照供页面展示 */
 const handleGetProfile = guard(async (params, ctx) => {
-  const profile = await profileLib.getMyProfile(ctx.store, { openid: ctx.openid, now: ctx.now() });
-  return ok({ profile });
+  const now = ctx.now();
+  const raw = await ctx.store.getProfileByOpenid(ctx.openid);
+  const profile = raw ? profileLib.toPublicProfile(raw, now) : null;
+  const quota = ctx.openid
+    ? await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile: raw })
+    : null;
+  return ok({ profile, quota });
 });
 
 /** offlineProfile：上架 / 下架 */
@@ -96,12 +108,13 @@ const handleOfflineProfile = guard(async (params, ctx) => {
 /* ============================ 获取（流程 B） ============================ */
 
 /**
- * getMatch：随机匹配 1 份档案。
- * 池子为空**不是错误**，而是正常业务态（客户端展示「今日可获取的资料已取完」空态）。
+ * getMatch：随机取 1 份缘签。
+ * 池子为空**不是错误**，而是正常业务态（客户端展示「今日的缘签已取完」空态）。
+ * 未留缘签的用户也能取签（盲取，见 matchLib.pickMatch）。
  */
 const handleGetMatch = guard(async (params, ctx) => {
   const now = ctx.now();
-  const profile = await requireActiveProfile(ctx);
+  const profile = await loadProfile(ctx);
 
   assertAllowed(await risk.checkMatch(ctx.store, { openid: ctx.openid, now }));
 
@@ -138,10 +151,10 @@ const handleGetMatch = guard(async (params, ctx) => {
  */
 const handleCreateAdTask = guard(async (params, ctx) => {
   const now = ctx.now();
-  const profile = await requireActiveProfile(ctx);
+  const profile = await loadProfile(ctx);
   const profileId = params.profileId;
   if (!profileId) throw domainError(ERROR_CODES.INVALID_PARAM, 'profile_id_required');
-  if (profileId === profile.profileId) throw domainError(ERROR_CODES.INVALID_PARAM, 'self_unlock_forbidden');
+  if (profile && profileId === profile.profileId) throw domainError(ERROR_CODES.INVALID_PARAM, 'self_unlock_forbidden');
 
   assertAllowed(await risk.checkAdTrigger(ctx.store, { openid: ctx.openid, now, profile }));
 
@@ -254,7 +267,8 @@ const handleListUnlocked = guard(async (params, ctx) => {
   }
 
   items.sort((a, b) => (b.unlockedAt || 0) - (a.unlockedAt || 0));
-  return ok({ items });
+  const profile = await ctx.store.getProfileByOpenid(ctx.openid);
+  return ok({ items, quota: await risk.quotaSnapshot(ctx.store, { openid: ctx.openid, now, profile }) });
 });
 
 /* ============================ 举报与埋点 ============================ */

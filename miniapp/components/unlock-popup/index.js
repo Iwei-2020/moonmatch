@@ -23,10 +23,10 @@ Component({
 
   data: {
     dots: [],
-    noticeTitle: '解锁须知',
+    noticeTitle: '解签须知',
     noticeText: COPY.UNLOCK_NOTICE,
     playingTip: COPY.AD_PLAYING_TIP,
-    grantingTitle: '奖励发放中',
+    grantingTitle: '正在解签',
     grantingText: COPY.AD_GRANTING,
     failTitle: COPY.AD_FAILED,
     failText: COPY.AD_FAILED,
@@ -34,7 +34,7 @@ Component({
     loadingTip: '正在拉取激励视频素材，请稍候…',
     limitText: COPY.DAILY_LIMIT,
     confirmText: COPY.BTN_UNLOCK,
-    cancelText: '暂不解锁',
+    cancelText: '暂不解签',
     retryText: '重试',
   },
 

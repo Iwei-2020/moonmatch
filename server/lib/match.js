@@ -25,31 +25,49 @@ function oppositeOf(gender) {
 
 /**
  * 抽取 1 份档案。
+ *
+ * `profile` 允许为 null：用户**无需先留缘签即可取签**（直接取用），
+ * 此时退化为「盲取」——不筛异性、不做年龄邻近，从全部在架档案里随机取一份，
+ * relaxationLevel 记为梯度末端（等同「不限年龄」）。
+ *
  * @param {object} store 存储
  * @param {object} args `{ openid, profile, now, random }`
  * @returns {Promise<{poolEmpty:boolean, relaxationLevel:number, card:object|null}>}
  */
 async function pickMatch(store, args) {
-  const { openid, profile, now } = args;
+  const { openid, profile } = args;
+  const now = args.now;
   const random = typeof args.random === 'function' ? args.random : defaultRandom;
   const steps = LIMITS.MATCH_AGE_STEPS;
 
-  const myAge = ageOf(profile.birthYear, now);
-  const wantGender = oppositeOf(profile.gender);
+  const myAge = profile ? ageOf(profile.birthYear, now) : null;
+  const wantGender = profile ? oppositeOf(profile.gender) : '';
 
   const candidates = (await store.listActiveProfiles())
-    .filter((p) => p.openid !== openid && p.gender === wantGender && p.status === PROFILE_STATUS.ACTIVE);
+    .filter((p) => p.openid !== openid && p.status === PROFILE_STATUS.ACTIVE && (!wantGender || p.gender === wantGender));
 
   const unlockedIds = new Set((await store.listUnlocks(openid)).map((u) => u.profileId));
   const fresh = candidates.filter((p) => !unlockedIds.has(p.profileId));
 
-  // ③ 年龄邻近逐级放宽（仅对未获取过的档案）
-  for (let level = 0; level < steps.length; level += 1) {
-    const step = steps[level];
-    const bucket = fresh.filter((p) => Math.abs(ageOf(p.birthYear, now) - myAge) <= step);
-    if (bucket.length) {
-      const picked = bucket[random(bucket.length)];
-      return { poolEmpty: false, relaxationLevel: level, card: await toMatchCard(picked, { now, store, openid }) };
+  if (fresh.length) {
+    // 盲取：无自有档案时不筛年龄，直接随机取一份
+    if (myAge === null) {
+      const picked = fresh[random(fresh.length)];
+      return {
+        poolEmpty: false,
+        relaxationLevel: steps.length - 1,
+        card: await toMatchCard(picked, { now, store, openid }),
+      };
+    }
+
+    // ③ 年龄邻近逐级放宽（仅对未获取过的档案）
+    for (let level = 0; level < steps.length; level += 1) {
+      const step = steps[level];
+      const bucket = fresh.filter((p) => Math.abs(ageOf(p.birthYear, now) - myAge) <= step);
+      if (bucket.length) {
+        const picked = bucket[random(bucket.length)];
+        return { poolEmpty: false, relaxationLevel: level, card: await toMatchCard(picked, { now, store, openid }) };
+      }
     }
   }
 
@@ -67,7 +85,7 @@ async function pickMatch(store, args) {
   return { poolEmpty: true, relaxationLevel: steps.length, card: null };
 }
 
-/** 卡片视图：带解锁态与免费复看标记，联系方式一律掩码 */
+/** 卡片视图：带解锁态与免费复看标记，缘签一律掩码 */
 async function toMatchCard(candidate, { now, store, openid }) {
   const view = toPublicProfile(candidate, now);
   const unlock = await store.getUnlock(openid, candidate.profileId);

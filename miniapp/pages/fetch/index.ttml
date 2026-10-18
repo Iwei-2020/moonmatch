@@ -1,8 +1,8 @@
-<!-- P-04 获取结果卡 · IDLE / MATCHING / EMPTY / LOCKED / UNLOCKED / DEAD / LIMIT -->
+<!-- P-04 取签结果卡 · IDLE / MATCHING / EMPTY / LOCKED / UNLOCKED / DEAD / LIMIT -->
 <view class="mm-page fetch">
   <view class="fetch__hd">
     <view class="fetch__back" bindtap="goHome">‹ 返回</view>
-    <view class="fetch__title">获取一个联系方式</view>
+    <view class="fetch__title">{{title}}</view>
     <view class="fetch__entry" bindtap="goUnlocks">{{unlocksEntry}}</view>
   </view>
 
@@ -15,7 +15,7 @@
       class="mm-btn {{fetchDisabled ? 'mm-btn--disabled' : 'mm-btn--primary'}} fetch__main"
       bindtap="onTapFetch"
     >{{fetchBtnText}}</button>
-    <view class="fetch__count">今日剩余获取次数 {{remain}} 次</view>
+    <view class="fetch__count">今日剩余缘签 {{remain}} 个</view>
     <view class="mm-sub fetch__note">{{poolNote}}</view>
   </block>
 
@@ -49,7 +49,7 @@
     <view class="mm-sub fetch__note">每日 {{dailyLimit}} 次，24:00 自然日重置（以服务端记账为准）</view>
   </block>
 
-  <!-- ④⑤⑥ 锁定 / 已解锁 / 已失效 -->
+  <!-- ④⑤⑥ 锁定 / 已解签 / 已失效 -->
   <block tt:else>
     <match-card
       card="{{card}}"
@@ -70,7 +70,7 @@
       </view>
     </view>
 
-    <view class="fetch__count">今日剩余获取次数 {{remain}} 次</view>
+    <view class="fetch__count">今日剩余缘签 {{remain}} 个</view>
   </block>
 
   <view class="mm-disclaimer fetch__disclaimer">{{disclaimer}}</view>

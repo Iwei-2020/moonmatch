@@ -1,11 +1,12 @@
 'use strict';
 
 /**
- * P-04 获取结果卡（核心页）
+ * P-04 取签结果卡（核心页）
  *
  * 依据：说明书 §2.2（流程 B 状态机）、§5（广告策略与频次）、§6.4；线稿说明 §五（6 态 + 达上限）。
  * 状态：IDLE / MATCHING / EMPTY / CARD_LOCKED / CARD_UNLOCKED / DEAD / LIMIT
- * 铁律：出卡不触发广告；仅在用户主动点击「看广告解锁」后触发。
+ * 铁律：出卡不触发广告；仅在用户主动点击「看广告解签」后触发。
+ * 产品口径：取签不再以先留缘签为前提，本页不做任何登记前置拦截。
  */
 
 const { PAGES, ROUTES, COPY, EVENTS, ERROR_CODES, LIMITS } = require('../../shared/client-constants.js');
@@ -16,7 +17,6 @@ const { createAd } = require('../../core/ad.js');
 Page({
   data: {
     state: 'idle',
-    registered: false,
     card: null,
     cardMode: 'locked',
     ticketId: '',
@@ -27,60 +27,54 @@ Page({
     popupState: 'notice',
     popupFailure: '',
 
+    title: '取一个缘签',
     matchingText: COPY.MATCHING,
     emptyText: COPY.POOL_EMPTY,
     limitText: COPY.DAILY_LIMIT,
     fetchBtnText: COPY.BTN_FETCH,
-    unlocksEntry: '我获取过的',
-    poolNote: '随机匹配 1 份你未获取过的资料，年龄相近优先；出卡免费，解锁才需看广告',
+    unlocksEntry: '我取过的',
+    poolNote: '随机为你取 1 份缘签，年龄相近优先；取签免费，看广告才解签',
     disclaimer: COPY.HOME_DISCLAIMER,
   },
 
   onShow() {
     getApp().reportPageView(PAGES.FETCH);
-    this.ensureRegistered();
+    this.loadQuota();
   },
 
   toast(title) {
     tt.showToast({ title, icon: 'none' });
   },
 
-  async ensureRegistered() {
+  /** 只读今日额度用于展示；取签不再要求先留缘签，读不到就按 0 展示，绝不拦截 */
+  async loadQuota() {
     const res = await callActive('getProfile', {});
-    if (res.ok) {
-      const p = (res.data && (res.data.profile || res.data)) || {};
-      const remain = typeof p.remainUnlock === 'number' ? p.remainUnlock : (p.remain || 0);
-      this.setData({ registered: true, remain });
-      return true;
-    }
-    if (res.code === ERROR_CODES.NOT_REGISTERED) {
-      tt.showToast({ title: COPY.NOT_REGISTERED_TIP, icon: 'none' });
-      tt.redirectTo({ url: ROUTES[PAGES.REGISTER] });
-      return false;
-    }
-    // 无云能力降级：保留骨架，禁用获取按钮，绝不白屏
-    this.setData({ registered: false, fetchDisabled: true });
-    return false;
+    const quota = (res.ok && res.data && res.data.quota) || {};
+    const remain = typeof quota.remainUnlock === 'number' ? quota.remainUnlock : 0;
+    this.setData({ remain });
   },
 
   async onTapFetch() {
     if (this.data.state === 'matching') return;
-    if (!this.data.registered) {
-      this.toast(COPY.NOT_REGISTERED_TIP);
-      tt.navigateTo({ url: ROUTES[PAGES.REGISTER] });
-      return;
-    }
     if (this.data.fetchDisabled) {
       this.toast(COPY.DAILY_LIMIT);
       return;
     }
 
-    track(EVENTS.MATCH_REQUEST, { registered: true, daily_matched: this.data.dailyMatched || 0 });
+    track(EVENTS.MATCH_REQUEST, { daily_matched: this.data.dailyMatched || 0 });
     this.setData({ state: 'matching' });
 
     const res = await callActive('getMatch', {});
 
     if (res.ok && res.data) {
+      if (res.data.quota && typeof res.data.quota.remainUnlock === 'number') {
+        this.setData({ remain: res.data.quota.remainUnlock });
+      }
+      if (res.data.poolEmpty) {
+        track(EVENTS.MATCH_RESULT, { result: 'empty', relaxation_level: res.data.relaxationLevel || 0 });
+        this.setData({ state: 'empty' });
+        return;
+      }
       const card = res.data.card || res.data;
       const relaxed = typeof res.data.relaxationLevel === 'number'
         ? res.data.relaxationLevel
@@ -106,14 +100,8 @@ Page({
       this.toast(COPY.DAILY_LIMIT);
       return;
     }
-    if (res.code === ERROR_CODES.NOT_REGISTERED) {
-      this.setData({ state: 'idle' });
-      this.toast(COPY.NOT_REGISTERED_TIP);
-      tt.navigateTo({ url: ROUTES[PAGES.REGISTER] });
-      return;
-    }
     this.setData({ state: 'idle' });
-    this.toast('获取失败，请稍后重试');
+    this.toast('取签失败，请稍后重试');
   },
 
   showCard(card) {
@@ -249,7 +237,7 @@ Page({
       card,
       ticketId,
     });
-    this.toast('已解锁，可复制联系方式');
+    this.toast('已解签，可复制缘签');
   },
 
   /** 向服务端上报一次广告失败：连续 3 次触发当日豁免通道（说明书 §5.3）。令牌一次性，上报后清空避免重复计入。 */
